@@ -15,20 +15,37 @@
   </nav>
 </header>
 
-<section class="page text">
-  <h1>Comparison</h1>
+<section class="section">
+  <h2>Comparison</h2>
 
-  <p>klazyOS is developed alongside major operating systems including:</p>
+  <div class="text-block">
+    <p>klazyOS competes with:</p>
+    <ul>
+      <li>Windows</li>
+      <li>macOS</li>
+      <li>Linux</li>
+      <li>ChromeOS</li>
+    </ul>
 
-  <ul>
-    <li>Windows</li>
-    <li>macOS</li>
-    <li>Linux</li>
-    <li>ChromeOS</li>
-  </ul>
-
-  <p>It is designed as an independent system with its own architecture.</p>
+    <p>Designed as an independent OS with its own architecture.</p>
+  </div>
 </section>
+
+<script>
+window.addEventListener("DOMContentLoaded", () => {
+  document.body.classList.add("loaded");
+});
+
+document.querySelectorAll("a").forEach(a => {
+  if (a.href.startsWith(window.location.origin)) {
+    a.addEventListener("click", e => {
+      e.preventDefault();
+      document.body.classList.remove("loaded");
+      setTimeout(() => window.location = a.href, 300);
+    });
+  }
+});
+</script>
 
 </body>
 </html>
