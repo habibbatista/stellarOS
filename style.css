@@ -1,8 +1,8 @@
 body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
-  background: #0b0b0b;
-  color: white;
+  color: #111;
+  background: #f5f5f5;
 }
 
 /* TOP BAR */
@@ -11,8 +11,8 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 16px 32px;
-  background: #120000;
-  border-bottom: 2px solid crimson;
+  background: #ffffff;
+  border-bottom: 2px solid #ddd;
   position: sticky;
   top: 0;
 }
@@ -25,7 +25,7 @@ body {
 
 nav a {
   margin-left: 12px;
-  color: white;
+  color: #111;
   text-decoration: none;
 }
 
@@ -43,7 +43,7 @@ nav a:hover {
   width: 80%;
   max-width: 900px;
   border-radius: 12px;
-  border: 2px solid crimson;
+  border: 2px solid #ddd;
 }
 
 /* SECTIONS */
@@ -75,20 +75,24 @@ footer {
   opacity: 0.6;
 }
 
-/* MOBILE */
-@media (max-width: 768px) {
-  .topbar {
-    flex-direction: column;
-    gap: 10px;
+/* 🌙 DARK MODE (system-based) */
+@media (prefers-color-scheme: dark) {
+
+  body {
+    background: #0b0b0b;
+    color: white;
   }
 
-  nav {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+  .topbar {
+    background: #120000;
+    border-bottom: 2px solid crimson;
+  }
+
+  nav a {
+    color: white;
   }
 
   .hero img {
-    width: 95%;
+    border: 2px solid crimson;
   }
 }
