@@ -1,17 +1,16 @@
 body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
+  background: linear-gradient(180deg, #f7f7f7, #eaeaea);
   color: #111;
-  background: linear-gradient(180deg, #f5f5f5, #e9e9e9);
 }
 
 /* TOP BAR */
 .topbar {
   display: flex;
   justify-content: space-between;
-  align-items: center;
   padding: 16px 32px;
-  background: linear-gradient(90deg, #ffffff, #f2f2f2);
+  background: #fff;
   border-bottom: 1px solid #ddd;
   position: sticky;
   top: 0;
@@ -19,18 +18,18 @@ body {
 
 .logo {
   font-weight: 700;
-  color: crimson;
+  color: #b00020;
   font-size: 18px;
 }
 
 nav a {
   margin-left: 12px;
-  color: #111;
   text-decoration: none;
+  color: #111;
 }
 
 nav a:hover {
-  color: crimson;
+  color: #b00020;
 }
 
 /* HERO */
@@ -42,45 +41,55 @@ nav a:hover {
 .hero img {
   width: 80%;
   max-width: 900px;
-  height: auto;
-  border-radius: 0; /* 🔥 removed rounding */
-  border: none;     /* 🔥 removed stroke */
-  box-shadow: none; /* clean flat look */
+  border: none;
 }
 
 /* SECTIONS */
 .section {
   text-align: center;
-  padding: 50px 20px;
+  padding: 60px 20px;
 }
 
 h2 {
-  color: crimson;
+  color: #b00020;
 }
 
-/* BUTTON (keep sharp like you wanted) */
+/* TEXT BLOCKS */
+.text-block {
+  max-width: 850px;
+  margin: auto;
+  text-align: left;
+  line-height: 1.7;
+}
+
+/* LISTS */
+ul {
+  text-align: left;
+  max-width: 800px;
+  margin: 20px auto;
+}
+
+/* BUTTON */
 .button {
   display: inline-block;
   padding: 14px 22px;
-  background: linear-gradient(90deg, crimson, #a80000);
+  background: linear-gradient(90deg, #b00020, #7a0016);
   color: white;
   font-weight: 600;
   text-decoration: none;
-  border-radius: 0; /* 🔥 sharp edges */
-  border: 2px solid #900000;
-  transition: 0.2s;
+  border-radius: 0;
+  border: 1px solid #5a0010;
 }
 
-.button:hover {
-  transform: scale(1.03);
+.note {
+  font-size: 12px;
+  opacity: 0.6;
+  margin-top: 10px;
 }
 
-/* ABOUT BOX (better structure) */
-.about-box {
-  max-width: 800px;
-  margin: auto;
-  text-align: left;
-  line-height: 1.6;
+/* LINKS */
+a {
+  color: #b00020;
 }
 
 /* FOOTER */
@@ -99,11 +108,15 @@ footer {
   }
 
   .topbar {
-    background: linear-gradient(90deg, #120000, #1a0a0a);
-    border-bottom: 1px solid crimson;
+    background: #120000;
+    border-bottom: 1px solid #b00020;
   }
 
   nav a {
+    color: white;
+  }
+
+  ul {
     color: white;
   }
 }
