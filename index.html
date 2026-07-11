@@ -355,12 +355,32 @@
             font-family: 'Poppins', sans-serif;
             font-size: 15px;
             outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s, opacity 0.2s;
         }
 
         .form-group input:focus {
             border-color: var(--link-hover);
             box-shadow: 0 0 0 3px rgba(255, 126, 95, 0.15);
+        }
+
+        .form-group input:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .form-group input:disabled {
+                background-color: rgba(255, 255, 255, 0.02);
+            }
+        }
+
+        .cooldown-warning {
+            font-size: 12px;
+            color: #ef4444;
+            margin-top: 4px;
+            display: none; /* Shown dynamically via JS */
+            font-weight: 400;
         }
 
         .forgot-password-link {
@@ -375,43 +395,6 @@
 
         .forgot-password-link:hover {
             color: var(--link-hover);
-        }
-
-        /* Avatar Selection Grid */
-        .avatar-selection-title {
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 10px;
-        }
-
-        .avatar-presets-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .avatar-preset-btn {
-            border: 2px solid transparent;
-            background: none;
-            padding: 0;
-            cursor: pointer;
-            border-radius: 50%;
-            overflow: hidden;
-            aspect-ratio: 1;
-            transition: transform 0.2s ease, border-color 0.2s ease;
-        }
-
-        .avatar-preset-btn img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        .avatar-preset-btn.selected {
-            border-color: var(--link-hover);
-            transform: scale(1.08);
         }
 
         .btn-secondary {
@@ -514,6 +497,7 @@
             border: 3px solid var(--link-hover);
             margin-bottom: 24px;
             box-shadow: 0 8px 20px rgba(255, 126, 95, 0.2);
+            background-color: var(--bg-color);
         }
 
         .profile-display-name-row {
@@ -655,6 +639,18 @@
             color: var(--text-main);
         }
 
+        /* Dynamic Onboarding Upload Preview */
+        .onboarding-avatar-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--link-hover);
+            margin: 0 auto 20px auto;
+            display: block;
+            background-color: var(--input-bg);
+        }
+
         /* Toast notifications */
         .toast {
             position: fixed;
@@ -779,7 +775,7 @@
         <div class="logo-area">
             <!-- Mini navbar avatar badge container with verified indicator badge, moved inside the Top-Left corner logo-area -->
             <div class="badge-wrapper">
-                <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=150&auto=format&fit=crop&q=60" class="nav-profile-badge" id="nav-avatar" onclick="switchTab('beta')" alt="Profile">
+                <img src="" class="nav-profile-badge" id="nav-avatar" onclick="switchTab('beta')" alt="Profile">
                 <span class="nav-verified-indicator" id="nav-avatar-verified">
                     <svg viewBox="0 0 24 24">
                         <polyline points="20 6 9 17 4 12"></polyline>
@@ -882,52 +878,29 @@
                 <!-- 4. PROFILE ONBOARDING SETTINGS (Username, Display Name, PFP) -->
                 <div id="auth-profile-setup-view" class="beta-form-container" style="display: none;">
                     <h2 style="font-size: 24px; font-weight: 300; margin-bottom: 8px;">Set Up Your stellarOS ID</h2>
-                    <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px;">
+                    <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px;" id="cooldown-helper-text">
                         Complete your beta program membership by setting up your unique handle, display name, and avatar picture.
                     </p>
                     <form onsubmit="performProfileUpdate(event)">
+                        <!-- Live avatar preview wrapper -->
+                        <img src="" class="onboarding-avatar-preview" id="setup-avatar-preview" alt="Avatar Preview">
+
                         <div class="form-group">
                             <label for="profile-display-input">Display Name</label>
                             <input type="text" id="profile-display-input" required placeholder="e.g. John Doe">
+                            <span class="cooldown-warning" id="name-cooldown-warning">Locked</span>
                         </div>
                         <div class="form-group">
                             <label for="profile-username-input">Unique Username</label>
                             <input type="text" id="profile-username-input" required placeholder="e.g. johndoe (letters & numbers only)" pattern="^[a-zA-Z0-9_]{3,15}$" title="Username must be 3-15 alphanumeric characters.">
+                            <span class="cooldown-warning" id="username-cooldown-warning">Locked</span>
                         </div>
 
-                        <!-- Custom Avatar Preset Switcher -->
-                        <div class="avatar-selection-title">Choose Avatar Preset</div>
-                        <div class="avatar-presets-grid">
-                            <button type="button" class="avatar-preset-btn selected" onclick="selectPresetAvatar(this, 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=150&auto=format&fit=crop&q=60')">
-                                <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=150&auto=format&fit=crop&q=60" alt="Preset 1">
-                            </button>
-                            <button type="button" class="avatar-preset-btn" onclick="selectPresetAvatar(this, 'https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=150&auto=format&fit=crop&q=60')">
-                                <img src="https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=150&auto=format&fit=crop&q=60" alt="Preset 2">
-                            </button>
-                            <button type="button" class="avatar-preset-btn" onclick="selectPresetAvatar(this, 'https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?w=150&auto=format&fit=crop&q=60')">
-                                <img src="https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?w=150&auto=format&fit=crop&q=60" alt="Preset 3">
-                            </button>
-                            <button type="button" class="avatar-preset-btn" onclick="selectPresetAvatar(this, 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=150&auto=format&fit=crop&q=60')">
-                                <img src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=150&auto=format&fit=crop&q=60" alt="Preset 4">
-                            </button>
-                            <button type="button" class="avatar-preset-btn" onclick="selectPresetAvatar(this, 'https://images.unsplash.com/photo-1614313913007-2b4ae8ce32d6?w=150&auto=format&fit=crop&q=60')">
-                                <img src="https://images.unsplash.com/photo-1614313913007-2b4ae8ce32d6?w=150&auto=format&fit=crop&q=60" alt="Preset 5">
-                            </button>
-                            <button type="button" class="avatar-preset-btn" onclick="selectPresetAvatar(this, 'https://images.unsplash.com/photo-1543722530-d2c3201371e7?w=150&auto=format&fit=crop&q=60')">
-                                <img src="https://images.unsplash.com/photo-1543722530-d2c3201371e7?w=150&auto=format&fit=crop&q=60" alt="Preset 6">
-                            </button>
-                        </div>
-
-                        <!-- Device Upload Section -->
+                        <!-- Device Upload Section Only -->
                         <div style="margin-bottom: 24px;">
                             <label class="avatar-selection-title" style="display: block; margin-bottom: 8px;">Device Custom Picture</label>
                             <button type="button" class="btn-secondary" onclick="document.getElementById('pfp-upload-input').click()">📁 Select Photo from Device</button>
                             <input type="file" id="pfp-upload-input" accept="image/*" style="display: none;" onchange="handleDeviceImageUpload(event)">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="profile-pfp-input">Or Paste Custom Image URL</label>
-                            <input type="url" id="profile-pfp-input" placeholder="https://example.com/avatar.png" oninput="handleCustomUrlInput(this.value)">
                         </div>
 
                         <button type="submit" class="btn-submit" id="btn-profile-text">Save Profile Settings</button>
@@ -1097,7 +1070,10 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        let selectedAvatarUrl = 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=150&auto=format&fit=crop&q=60';
+        // Vector SVG-based "unknown guy" placeholder profile picture (Used when no custom file exists)
+        const DEFAULT_SILHOUETTE_AVATAR = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2394a3b8"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+        
+        let selectedAvatarUrl = ""; // Tracks the currently processed image data-URI
 
         // Monitor active user persistence states across restarts
         onAuthStateChanged(auth, (user) => {
@@ -1129,11 +1105,11 @@
             });
         }
 
-        // Helper function to resolve active avatar from persistent local storage or Firebase
+        // Helper function to resolve active avatar from persistent local storage or fallback to default silhouette
         function getResolvedAvatarUrl(user) {
-            if (!user) return 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=150&auto=format&fit=crop&q=60';
+            if (!user) return DEFAULT_SILHOUETTE_AVATAR;
             const localCustomAvatar = localStorage.getItem(`stellarOS_avatar_${user.uid}`);
-            return localCustomAvatar || user.photoURL || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=150&auto=format&fit=crop&q=60';
+            return localCustomAvatar || user.photoURL || DEFAULT_SILHOUETTE_AVATAR;
         }
 
         // Handle structural view updates depending on verification status & profile setup
@@ -1179,6 +1155,8 @@
                         document.getElementById('profile-email-val').innerText = user.email;
                     } else {
                         // Email verified but profile details are not set up yet!
+                        selectedAvatarUrl = DEFAULT_SILHOUETTE_AVATAR;
+                        document.getElementById('setup-avatar-preview').src = DEFAULT_SILHOUETTE_AVATAR;
                         showView('auth-profile-setup-view');
                         document.getElementById('beta-intro').style.display = 'block';
                         navVerifiedBadge.style.display = 'none';
@@ -1191,28 +1169,11 @@
             } else {
                 showView('auth-signup-view');
                 document.getElementById('beta-intro').style.display = 'block';
-                // Reset nav avatar back to standard planetary preset as Guest
-                navAvatar.src = 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=150&auto=format&fit=crop&q=60';
+                // Reset nav avatar back to standard unknown guy preset as Guest
+                navAvatar.src = DEFAULT_SILHOUETTE_AVATAR;
                 navVerifiedBadge.style.display = 'none';
             }
         }
-
-        // Handle Presets in onboarding view
-        window.selectPresetAvatar = function(btn, url) {
-            document.querySelectorAll('.avatar-preset-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            selectedAvatarUrl = url;
-            // Clear custom url input box
-            document.getElementById('profile-pfp-input').value = "";
-        };
-
-        window.handleCustomUrlInput = function(url) {
-            if (url) {
-                // Deselect all presets
-                document.querySelectorAll('.avatar-preset-btn').forEach(b => b.classList.remove('selected'));
-                selectedAvatarUrl = url;
-            }
-        };
 
         // Real Sign Up with Live Email Verification Dispatch
         window.performSignUp = async function(e) {
@@ -1265,39 +1226,76 @@
             }
         };
 
-        // Complete Profile Update Process with Bypass for Firebase Character Limits
+        // Complete Profile Update Process with Bypass for Firebase Character Limits and robust COOLDOWN Checks
         window.performProfileUpdate = async function(e) {
             e.preventDefault();
             const displayName = document.getElementById('profile-display-input').value;
             const username = document.getElementById('profile-username-input').value.toLowerCase().replace(/\s+/g, '');
             const submitBtn = document.getElementById('btn-profile-text');
 
+            if (!auth.currentUser) return;
+
+            const uid = auth.currentUser.uid;
+            const now = Date.now();
+
+            // Extract existing profile details if they exist
+            let currentDisplayName = "";
+            let currentUsername = "";
+            if (auth.currentUser.displayName && auth.currentUser.displayName.includes('::')) {
+                const parts = auth.currentUser.displayName.split('::');
+                currentDisplayName = parts[0];
+                currentUsername = parts[1];
+            }
+
+            // Check Display Name change restriction (3-day cooldown)
+            if (currentDisplayName !== "" && displayName !== currentDisplayName) {
+                const lastChange = parseInt(localStorage.getItem(`stellarOS_last_name_change_${uid}`) || "0");
+                const daysLeft = 3 - (now - lastChange) / (1000 * 60 * 60 * 24);
+                if (daysLeft > 0) {
+                    showToast(`Name change is on cooldown. Try again in ${Math.ceil(daysLeft)} days.`, "❌");
+                    return;
+                }
+            }
+
+            // Check Username change restriction (30-day cooldown)
+            if (currentUsername !== "" && username !== currentUsername) {
+                const lastChange = parseInt(localStorage.getItem(`stellarOS_last_username_change_${uid}`) || "0");
+                const daysLeft = 30 - (now - lastChange) / (1000 * 60 * 60 * 24);
+                if (daysLeft > 0) {
+                    showToast(`Username change is on cooldown. Try again in ${Math.ceil(daysLeft)} days.`, "❌");
+                    return;
+                }
+            }
+
             submitBtn.disabled = true;
             submitBtn.innerHTML = `<span class="spinner"></span> Activating ID...`;
 
             try {
-                if (auth.currentUser) {
-                    const combinedName = `${displayName}::${username}`;
-                    let finalFirebasePhotoUrl = selectedAvatarUrl;
+                const combinedName = `${displayName}::${username}`;
+                let finalFirebasePhotoUrl = DEFAULT_SILHOUETTE_AVATAR;
 
-                    // If it is a base64 image (device upload), store it locally to avoid Auth's 2,048 char limit.
-                    if (selectedAvatarUrl.startsWith('data:image')) {
-                        localStorage.setItem(`stellarOS_avatar_${auth.currentUser.uid}`, selectedAvatarUrl);
-                        // Save a safe, short placeholder URL to Firebase Auth so the API call compiles successfully.
-                        finalFirebasePhotoUrl = 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=150&auto=format&fit=crop&q=60';
-                    } else {
-                        // User chose a preset URL or pasted an external direct link
-                        localStorage.removeItem(`stellarOS_avatar_${auth.currentUser.uid}`);
-                    }
-
-                    await updateProfile(auth.currentUser, {
-                        displayName: combinedName,
-                        photoURL: finalFirebasePhotoUrl
-                    });
-                    
-                    showToast("stellarOS ID setup successful!", "✨");
-                    handleUserStateChange(auth.currentUser);
+                // Save base64 photo locally to bypass Firebase character limit, and store standard silhouette on Firebase Auth
+                if (selectedAvatarUrl && selectedAvatarUrl.startsWith('data:image')) {
+                    localStorage.setItem(`stellarOS_avatar_${uid}`, selectedAvatarUrl);
+                } else if (selectedAvatarUrl === "" || selectedAvatarUrl === DEFAULT_SILHOUETTE_AVATAR) {
+                    localStorage.removeItem(`stellarOS_avatar_${uid}`);
                 }
+
+                await updateProfile(auth.currentUser, {
+                    displayName: combinedName,
+                    photoURL: finalFirebasePhotoUrl
+                });
+
+                // Update cooldown trackers only if edits were successfully committed
+                if (currentDisplayName !== displayName) {
+                    localStorage.setItem(`stellarOS_last_name_change_${uid}`, now.toString());
+                }
+                if (currentUsername !== username) {
+                    localStorage.setItem(`stellarOS_last_username_change_${uid}`, now.toString());
+                }
+                
+                showToast("stellarOS ID setup successful!", "✨");
+                handleUserStateChange(auth.currentUser);
             } catch (error) {
                 showToast(error.message, "❌");
             } finally {
@@ -1306,9 +1304,23 @@
             }
         };
 
-        // Allow user to trigger Edit Mode anytime
+        // Helper countdown formatter
+        function getCooldownRemainingString(msRemaining) {
+            const totalHours = Math.floor(msRemaining / (1000 * 60 * 60));
+            const days = Math.floor(totalHours / 24);
+            const hours = totalHours % 24;
+            if (days > 0) {
+                return `Locked for ${days}d ${hours}h`;
+            }
+            return `Locked for ${hours}h`;
+        }
+
+        // Allow user to trigger Edit Mode anytime (Checks and locks input fields based on cooldowns)
         window.triggerProfileEdit = function() {
             if (auth.currentUser) {
+                const uid = auth.currentUser.uid;
+                const now = Date.now();
+
                 let displayName = auth.currentUser.displayName || "";
                 let username = "";
                 if (displayName.includes('::')) {
@@ -1318,14 +1330,45 @@
                 }
 
                 // Populate form inputs
-                document.getElementById('profile-display-input').value = displayName;
-                document.getElementById('profile-username-input').value = username;
+                const displayNameInput = document.getElementById('profile-display-input');
+                const usernameInput = document.getElementById('profile-username-input');
+                const nameWarning = document.getElementById('name-cooldown-warning');
+                const usernameWarning = document.getElementById('username-cooldown-warning');
+                const helperText = document.getElementById('cooldown-helper-text');
+
+                displayNameInput.value = displayName;
+                usernameInput.value = username;
                 
                 const currentAvatar = getResolvedAvatarUrl(auth.currentUser);
-                if (currentAvatar && currentAvatar.startsWith('http')) {
-                    document.getElementById('profile-pfp-input').value = currentAvatar;
-                }
+                document.getElementById('setup-avatar-preview').src = currentAvatar;
                 selectedAvatarUrl = currentAvatar;
+
+                // Reset statuses
+                displayNameInput.disabled = false;
+                usernameInput.disabled = false;
+                nameWarning.style.display = 'none';
+                usernameWarning.style.display = 'none';
+                helperText.innerText = "Complete your beta program membership by setting up your unique handle, display name, and avatar picture.";
+
+                // Enforce 3-day Name Cooldown locks
+                const nameLastChange = parseInt(localStorage.getItem(`stellarOS_last_name_change_${uid}`) || "0");
+                const nameTimeDiff = now - nameLastChange;
+                const nameCooldownDuration = 3 * 24 * 60 * 60 * 1000;
+                if (nameTimeDiff < nameCooldownDuration) {
+                    displayNameInput.disabled = true;
+                    nameWarning.innerText = `🔒 Cooldown: ${getCooldownRemainingString(nameCooldownDuration - nameTimeDiff)}`;
+                    nameWarning.style.display = 'block';
+                }
+
+                // Enforce 30-day Username Cooldown locks
+                const usernameLastChange = parseInt(localStorage.getItem(`stellarOS_last_username_change_${uid}`) || "0");
+                const usernameTimeDiff = now - usernameLastChange;
+                const usernameCooldownDuration = 30 * 24 * 60 * 60 * 1000;
+                if (usernameTimeDiff < usernameCooldownDuration) {
+                    usernameInput.disabled = true;
+                    usernameWarning.innerText = `🔒 Cooldown: ${getCooldownRemainingString(usernameCooldownDuration - usernameTimeDiff)}`;
+                    usernameWarning.style.display = 'block';
+                }
 
                 showView('auth-profile-setup-view');
             }
@@ -1397,7 +1440,6 @@
             reader.onload = function(event) {
                 const img = new Image();
                 img.onload = function() {
-                    // Clean local offscreen compressor using Canvas logic
                     const canvas = document.getElementById('offscreen-compressor');
                     const ctx = canvas.getContext('2d');
                     
@@ -1408,9 +1450,9 @@
                     
                     selectedAvatarUrl = canvas.toDataURL('image/jpeg', 0.85);
                     
-                    // Visual state indicator update
-                    document.querySelectorAll('.avatar-preset-btn').forEach(b => b.classList.remove('selected'));
-                    showToast("Custom photo processed & loaded successfully!", "🖼️");
+                    // Update preview source in real-time
+                    document.getElementById('setup-avatar-preview').src = selectedAvatarUrl;
+                    showToast("Custom photo loaded successfully!", "🖼️");
                 };
                 img.src = event.target.result;
             };
