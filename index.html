@@ -77,7 +77,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 40px;
+            padding: 12px 40px; /* Reduced vertical padding for a thinner look */
             position: sticky;
             top: 0;
             z-index: 100;
@@ -94,7 +94,7 @@
         }
 
         .logo {
-            font-size: 24px;
+            font-size: 22px;
             color: var(--logo-color);
             text-transform: none; /* Ensures exact capitalization */
             letter-spacing: -0.5px;
@@ -133,20 +133,25 @@
             background-color: var(--verified-badge-color);
             color: white;
             border-radius: 50%;
-            font-size: 8px;
             display: none;
             align-items: center;
             justify-content: center;
             border: 1.5px solid var(--header-bg);
             box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-            font-weight: bold;
+        }
+
+        .nav-verified-indicator svg {
+            width: 8px;
+            height: 8px;
+            stroke: white;
+            stroke-width: 4px;
+            fill: none;
         }
 
         /* Navigation menu styling */
         nav {
             display: flex;
             align-items: center;
-            gap: 30px;
         }
 
         nav ul {
@@ -528,19 +533,18 @@
 
         /* Verified Badge Component */
         .verified-badge {
-            display: inline-flex;
+            display: none; /* Shown dynamically via JS */
             align-items: center;
             justify-content: center;
+            color: var(--verified-badge-color); /* Matches light/dark blue accent */
+            user-select: none;
+        }
+
+        .verified-badge svg {
             width: 20px;
             height: 20px;
-            background-color: var(--verified-badge-color); /* Matches light/dark blue accent */
-            color: #ffffff;
-            border-radius: 50%;
-            font-size: 11px;
-            font-weight: bold;
-            line-height: 1;
-            user-select: none;
-            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
+            fill: currentColor;
+            filter: drop-shadow(0 2px 8px rgba(59, 130, 246, 0.35));
         }
 
         .profile-username {
@@ -729,7 +733,7 @@
             header {
                 flex-direction: column;
                 gap: 15px;
-                padding: 20px 20px;
+                padding: 16px 20px;
                 text-align: center;
             }
 
@@ -760,6 +764,10 @@
             .profile-card {
                 max-width: 100%;
             }
+
+            .badge-wrapper {
+                margin-top: 5px;
+            }
         }
     </style>
 </head>
@@ -780,12 +788,17 @@
                 <li><a class="nav-link" onclick="switchTab('about')">About</a></li>
                 <li><a class="nav-link" onclick="switchTab('requirements')">Requirements</a></li>
             </ul>
-            <!-- Mini navbar avatar badge container with verified indicator badge -->
-            <div class="badge-wrapper">
-                <img src="" class="nav-profile-badge" id="nav-avatar" onclick="switchTab('beta')" alt="Profile">
-                <span class="nav-verified-indicator" id="nav-avatar-verified">✓</span>
-            </div>
         </nav>
+
+        <!-- Mini navbar avatar badge container with verified indicator badge, moved to the absolute far right of the header -->
+        <div class="badge-wrapper">
+            <img src="" class="nav-profile-badge" id="nav-avatar" onclick="switchTab('beta')" alt="Profile">
+            <span class="nav-verified-indicator" id="nav-avatar-verified">
+                <svg viewBox="0 0 24 24">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </span>
+        </div>
     </header>
 
     <main>
@@ -928,7 +941,11 @@
                         <img src="" class="profile-avatar-large" id="card-avatar" alt="User Avatar">
                         <div class="profile-display-name-row">
                             <h3 class="profile-display-name" id="card-display-name">---</h3>
-                            <span class="verified-badge" id="card-verified-badge" style="display: none;" title="stellarOS Verified Core Creator">✓</span>
+                            <span class="verified-badge" id="card-verified-badge" title="stellarOS Verified Core Creator">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M23 12l-2.44-2.78.34-3.68-3.61-.82-1.89-3.2L12 2.96 8.6 1.52 6.71 4.72l-3.61.81.34 3.68L1 12l2.44 2.78-.34 3.69 3.61.82 1.89 3.18L12 21.04l3.4 1.44 1.89-3.18 3.61-.82-.34-3.69L23 12zm-13 5l-4-4 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                </svg>
+                            </span>
                         </div>
                         <p class="profile-username" id="card-username">@---</p>
                         <div class="profile-meta-pill">Beta Tester</div>
@@ -1505,13 +1522,13 @@
     </script>
 
     <script>
-        // Sticky Header shrink logic
+        // Sticky Header shrink logic - thinned down padding curves
         window.addEventListener('scroll', () => {
             const navbar = document.getElementById('navbar');
             if (window.scrollY > 20) {
-                navbar.style.padding = "14px 40px";
+                navbar.style.padding = "8px 40px";
             } else {
-                navbar.style.padding = "20px 40px";
+                navbar.style.padding = "12px 40px";
             }
         });
 
