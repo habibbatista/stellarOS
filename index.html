@@ -14,40 +14,42 @@
            COLOR PALETTES (System-driven & Custom)
            ========================================== */
         :root {
-            /* Light Mode Theme */
-            --bg-color: #f0f4f8; 
-            --logo-color: #ffffff; /* Crisp white logo */
-            --link-color: #cbd5e1; /* Clear light slate text */
-            --link-hover: #ff7e5f; /* Sunset orange */
-            --text-main: #1e293b;
+            /* Light Mode: White & Gray Theme */
+            --bg-color: #f8fafc; 
+            --logo-color: #1e293b; /* Sleek dark gray logo */
+            --link-color: #475569; /* Balanced slate text */
+            --link-hover: #ff7e5f; /* Sunset orange active indicator */
+            --text-main: #0f172a;
             --text-muted: #64748b;
-            --header-bg: #0f172a; /* Fixed deep dark slate menu bar for light mode */
-            --divider-line: rgba(15, 23, 42, 0.08);
+            --header-bg: #ffffff; /* Crisp white menu bar */
+            --divider-line: rgba(15, 23, 42, 0.06);
             --input-bg: #ffffff;
             --input-border: #cbd5e1;
             --btn-bg: #0f172a;
             --btn-text: #ffffff;
-            --card-bg: rgba(255, 255, 255, 0.6);
-            --profile-card-bg: rgba(255, 255, 255, 0.85);
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --profile-card-bg: #ffffff;
+            --verified-badge-color: #3b82f6;
         }
 
         @media (prefers-color-scheme: dark) {
             :root {
-                /* Dark Mode Theme */
-                --bg-color: #0b0f19; /* Deep Space Blue */
-                --logo-color: #f7fafc; /* Cosmic silver */
-                --link-color: #cbd5e0; /* Bright starlight gray */
-                --link-hover: #58a6ff; /* Space blue */
-                --text-main: #f7fafc;
-                --text-muted: #a0aec0;
-                --header-bg: #070a12; /* Extremely dark cosmic black menu bar */
+                /* Dark Mode: Pure Black Theme */
+                --bg-color: #000000; /* Pure black background */
+                --logo-color: #ffffff; /* Starlight white logo */
+                --link-color: #94a3b8; /* Soft cosmic gray text */
+                --link-hover: #58a6ff; /* Stellar blue active indicator */
+                --text-main: #f8fafc;
+                --text-muted: #64748b;
+                --header-bg: #000000; /* Pure black menu bar */
                 --divider-line: rgba(255, 255, 255, 0.1);
-                --input-bg: #111827;
-                --input-border: #374151;
-                --btn-bg: #58a6ff;
-                --btn-text: #0b0f19;
-                --card-bg: rgba(255, 255, 255, 0.02);
-                --profile-card-bg: rgba(255, 255, 255, 0.03);
+                --input-bg: #09090b;
+                --input-border: #27272a;
+                --btn-bg: #ffffff;
+                --btn-text: #000000;
+                --card-bg: rgba(255, 255, 255, 0.01);
+                --profile-card-bg: #09090b;
+                --verified-badge-color: #38bdf8;
             }
         }
 
@@ -79,8 +81,8 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            background-color: var(--header-bg); /* Dark menu bar background */
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            background-color: var(--header-bg); 
+            border-bottom: 1px solid var(--divider-line);
             transition: padding 0.3s ease, background-color 0.3s ease;
         }
 
@@ -128,7 +130,7 @@
             right: -2px;
             width: 14px;
             height: 14px;
-            background-color: #3b82f6;
+            background-color: var(--verified-badge-color);
             color: white;
             border-radius: 50%;
             font-size: 8px;
@@ -531,7 +533,7 @@
             justify-content: center;
             width: 20px;
             height: 20px;
-            background-color: #3b82f6; /* Classic Verified Blue */
+            background-color: var(--verified-badge-color); /* Matches light/dark blue accent */
             color: #ffffff;
             border-radius: 50%;
             font-size: 11px;
@@ -914,7 +916,7 @@
                             <input type="url" id="profile-pfp-input" placeholder="https://example.com/avatar.png" oninput="handleCustomUrlInput(this.value)">
                         </div>
 
-                        <button type="submit" class="btn-submit" id="btn-profile-text">Save stellarOS Profile</button>
+                        <button type="submit" class="btn-submit" id="btn-profile-text">Save Profile Settings</button>
                     </form>
                 </div>
 
@@ -1055,7 +1057,7 @@
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         // =========================================================================
-        // YOUR LIVE ENCRYPTED FIREBASE CONFIGURATION (Verified)
+        // YOUR LIVE ENCRYPTED FIREBASE CONFIGURATION
         // =========================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyAKlMEAGWBuBfcCDzc3D6bg4-C-phhcTqU",
@@ -1067,7 +1069,7 @@
             measurementId: "G-D35DKGH3MS"
         };
 
-        // Initialize Firebase services
+        // Initialize Firebase services safely
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
@@ -1279,7 +1281,7 @@
                 showToast(error.message, "❌");
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerText = "Save Profile";
+                submitBtn.innerText = "Save Profile Settings";
             }
         };
 
