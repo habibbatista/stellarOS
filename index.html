@@ -9,30 +9,67 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap" rel="stylesheet">
     
     <style>
-        /* Base styles using Poppins Light */
+        /* ==========================================
+           LIGHT MODE (Sunset / Soft Blue Theme) 
+           ========================================== */
+        :root {
+            --bg-color: #f0f4f8; /* Sliiiiightly blue-ish tint */
+            --logo-color: #707a8a; /* Slate gray */
+            --link-color: #2c3e50; /* Deep blue-gray */
+            --link-hover: #e67e22; /* Warm sunset accent on hover */
+            --border-style: linear-gradient(90deg, #ff7e5f, #feb47b); /* Sunset gradient border */
+        }
+
+        /* ==========================================
+           DARK MODE (Space Blue Theme)
+           ========================================== */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #0b0f19; /* Deep space blue */
+                --logo-color: #a0aec0; /* Lighter cosmic gray */
+                --link-color: #e2e8f0; /* Crisp starlight white */
+                --link-hover: #58a6ff; /* Vibrant nebular blue on hover */
+                --border-style: linear-gradient(90deg, #1f293d, #384d72); /* Deep space divider */
+            }
+        }
+
+        /* Base styles using variables */
         body {
             margin: 0;
             padding: 0;
             font-family: 'Poppins', sans-serif;
             font-weight: 300;
-            background-color: #ffffff;
+            background-color: var(--bg-color);
             -webkit-font-smoothing: antialiased;
+            transition: background-color 0.3s ease;
         }
 
-        /* Header layout containing the OS name and the menu */
+        /* Header layout */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 20px 40px;
-            border-bottom: 1px solid #eaeaea;
+            position: relative;
+        }
+
+        /* Custom bottom border using the theme gradients */
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--border-style);
         }
 
         /* Specific gray styling for the lowercase OS name */
         .logo {
             font-size: 24px;
-            color: #707070;
+            color: var(--logo-color);
             text-transform: none;
+            transition: color 0.3s ease;
         }
 
         /* Navigation menu styling */
@@ -46,32 +83,32 @@
 
         nav a {
             text-decoration: none;
-            color: #333333;
+            color: var(--link-color);
             font-size: 16px;
             transition: color 0.2s ease;
         }
 
         nav a:hover {
-            color: #707070;
+            color: var(--link-hover);
         }
 
         /* Mobile Optimization */
         @media (max-width: 600px) {
             header {
-                flex-direction: column; /* Stacks the logo above the menu */
+                flex-direction: column;
                 gap: 15px;
                 padding: 20px 20px;
                 text-align: center;
             }
 
             nav ul {
-                gap: 15px; /* Pulls links slightly closer on small screens */
-                flex-wrap: wrap; /* Allows links to wrap to a new line if screen is tiny */
+                gap: 15px;
+                flex-wrap: wrap;
                 justify-content: center;
             }
 
             nav a {
-                font-size: 15px; /* Slightly smaller font for mobile screens */
+                font-size: 15px;
             }
         }
     </style>
