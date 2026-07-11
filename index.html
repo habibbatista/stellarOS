@@ -16,19 +16,19 @@
         :root {
             /* Light Mode Theme */
             --bg-color: #f0f4f8; 
-            --logo-color: #f7fafc; /* Crisp white on dark menu */
-            --link-color: #cbd5e0; /* Slate/gray text on dark menu */
+            --logo-color: #ffffff; /* Crisp white logo */
+            --link-color: #cbd5e1; /* Clear light slate text */
             --link-hover: #ff7e5f; /* Sunset orange */
-            --text-main: #2d3748;
-            --text-muted: #5a6a85;
-            --header-bg: #141b26; /* Darker menu bar background (deep slate) */
-            --divider-line: rgba(44, 62, 80, 0.1);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --header-bg: #0f172a; /* Fixed deep dark slate menu bar for light mode */
+            --divider-line: rgba(15, 23, 42, 0.08);
             --input-bg: #ffffff;
             --input-border: #cbd5e1;
-            --btn-bg: #141b26;
+            --btn-bg: #0f172a;
             --btn-text: #ffffff;
-            --card-bg: rgba(255, 255, 255, 0.5);
-            --profile-card-bg: rgba(255, 255, 255, 0.8);
+            --card-bg: rgba(255, 255, 255, 0.6);
+            --profile-card-bg: rgba(255, 255, 255, 0.85);
         }
 
         @media (prefers-color-scheme: dark) {
@@ -99,7 +99,13 @@
             font-weight: 400;
         }
 
-        /* Header Profile Badge */
+        /* Header Profile Badge container with verification support */
+        .badge-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
         .nav-profile-badge {
             width: 32px;
             height: 32px;
@@ -113,6 +119,25 @@
 
         .nav-profile-badge:hover {
             transform: scale(1.1);
+        }
+
+        /* Nav Verification Badge */
+        .nav-verified-indicator {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 14px;
+            height: 14px;
+            background-color: #3b82f6;
+            color: white;
+            border-radius: 50%;
+            font-size: 8px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border: 1.5px solid var(--header-bg);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            font-weight: bold;
         }
 
         /* Navigation menu styling */
@@ -484,11 +509,36 @@
             box-shadow: 0 8px 20px rgba(255, 126, 95, 0.2);
         }
 
+        .profile-display-name-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin: 0;
+        }
+
         .profile-display-name {
             font-size: 24px;
             font-weight: 500;
-            margin: 0;
             color: var(--text-main);
+            margin: 0;
+        }
+
+        /* Verified Badge Component */
+        .verified-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            background-color: #3b82f6; /* Classic Verified Blue */
+            color: #ffffff;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: bold;
+            line-height: 1;
+            user-select: none;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
         }
 
         .profile-username {
@@ -728,8 +778,11 @@
                 <li><a class="nav-link" onclick="switchTab('about')">About</a></li>
                 <li><a class="nav-link" onclick="switchTab('requirements')">Requirements</a></li>
             </ul>
-            <!-- Mini navbar avatar badge -->
-            <img src="" class="nav-profile-badge" id="nav-avatar" onclick="switchTab('beta')" alt="Profile">
+            <!-- Mini navbar avatar badge container with verified indicator badge -->
+            <div class="badge-wrapper">
+                <img src="" class="nav-profile-badge" id="nav-avatar" onclick="switchTab('beta')" alt="Profile">
+                <span class="nav-verified-indicator" id="nav-avatar-verified">✓</span>
+            </div>
         </nav>
     </header>
 
@@ -871,7 +924,10 @@
                     <!-- Profile Card Badge -->
                     <div class="profile-card">
                         <img src="" class="profile-avatar-large" id="card-avatar" alt="User Avatar">
-                        <h3 class="profile-display-name" id="card-display-name">---</h3>
+                        <div class="profile-display-name-row">
+                            <h3 class="profile-display-name" id="card-display-name">---</h3>
+                            <span class="verified-badge" id="card-verified-badge" style="display: none;" title="stellarOS Verified Core Creator">✓</span>
+                        </div>
                         <p class="profile-username" id="card-username">@---</p>
                         <div class="profile-meta-pill">Beta Tester</div>
                     </div>
@@ -1057,6 +1113,7 @@
         // Handle structural view updates depending on verification status & profile setup
         function handleUserStateChange(user) {
             const navAvatar = document.getElementById('nav-avatar');
+            const navVerifiedBadge = document.getElementById('nav-avatar-verified');
 
             if (user) {
                 if (user.emailVerified) {
@@ -1074,6 +1131,18 @@
                             username = parts[1];
                         }
 
+                        // Determine if they are the special verified user @habib
+                        const isHabib = username.toLowerCase() === 'habib';
+                        const verifiedBadge = document.getElementById('card-verified-badge');
+                        
+                        if (isHabib) {
+                            verifiedBadge.style.display = 'inline-flex';
+                            navVerifiedBadge.style.display = 'flex';
+                        } else {
+                            verifiedBadge.style.display = 'none';
+                            navVerifiedBadge.style.display = 'none';
+                        }
+
                         // Update page elements with Profile details (prioritizing custom device pfp)
                         const resolvedAvatar = getResolvedAvatarUrl(user);
                         document.getElementById('card-avatar').src = resolvedAvatar;
@@ -1089,16 +1158,19 @@
                         showView('auth-profile-setup-view');
                         document.getElementById('beta-intro').style.display = 'block';
                         navAvatar.style.display = 'none';
+                        navVerifiedBadge.style.display = 'none';
                     }
                 } else {
                     showView('auth-verify-view');
                     document.getElementById('beta-intro').style.display = 'block';
                     navAvatar.style.display = 'none';
+                    navVerifiedBadge.style.display = 'none';
                 }
             } else {
                 showView('auth-signup-view');
                 document.getElementById('beta-intro').style.display = 'block';
                 navAvatar.style.display = 'none';
+                navVerifiedBadge.style.display = 'none';
             }
         }
 
