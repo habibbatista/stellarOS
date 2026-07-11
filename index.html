@@ -996,7 +996,7 @@
             signOut,
             reload,
             updateProfile
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 
         // =========================================================================
         // YOUR LIVE ENCRYPTED FIREBASE CONFIGURATION (Verified)
@@ -1047,14 +1047,21 @@
             });
         }
 
+        // Helper function to resolve active avatar from persistent local storage or Firebase
+        function getResolvedAvatarUrl(user) {
+            if (!user) return 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=150&auto=format&fit=crop&q=60';
+            const localCustomAvatar = localStorage.getItem(`stellarOS_avatar_${user.uid}`);
+            return localCustomAvatar || user.photoURL || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=150&auto=format&fit=crop&q=60';
+        }
+
         // Handle structural view updates depending on verification status & profile setup
         function handleUserStateChange(user) {
             const navAvatar = document.getElementById('nav-avatar');
 
             if (user) {
                 if (user.emailVerified) {
-                    // Check if profile details (Display Name & PFP) are set up
-                    if (user.displayName && user.photoURL) {
+                    // Check if profile details (Display Name) are set up
+                    if (user.displayName) {
                         showView('auth-status-view');
                         document.getElementById('beta-intro').style.display = 'none';
 
@@ -1067,14 +1074,15 @@
                             username = parts[1];
                         }
 
-                        // Update page elements with Profile details
-                        document.getElementById('card-avatar').src = user.photoURL;
+                        // Update page elements with Profile details (prioritizing custom device pfp)
+                        const resolvedAvatar = getResolvedAvatarUrl(user);
+                        document.getElementById('card-avatar').src = resolvedAvatar;
                         document.getElementById('card-display-name').innerText = displayName;
                         document.getElementById('card-username').innerText = username ? `@${username}` : `@tester`;
                         document.getElementById('profile-email-val').innerText = user.email;
 
                         // Display navbar mini-profile badge
-                        navAvatar.src = user.photoURL;
+                        navAvatar.src = resolvedAvatar;
                         navAvatar.style.display = 'block';
                     } else {
                         // Email verified but profile details are not set up yet!
@@ -1162,7 +1170,7 @@
             }
         };
 
-        // Complete Profile Update Process
+        // Complete Profile Update Process with Bypass for Firebase Character Limits
         window.performProfileUpdate = async function(e) {
             e.preventDefault();
             const displayName = document.getElementById('profile-display-input').value;
@@ -1174,11 +1182,22 @@
 
             try {
                 if (auth.currentUser) {
-                    // Combine Display Name and Username safely inside Auth's displayName string
                     const combinedName = `${displayName}::${username}`;
+                    let finalFirebasePhotoUrl = selectedAvatarUrl;
+
+                    // If it is a base64 image (device upload), store it locally to avoid Auth's 2,048 char limit.
+                    if (selectedAvatarUrl.startsWith('data:image')) {
+                        localStorage.setItem(`stellarOS_avatar_${auth.currentUser.uid}`, selectedAvatarUrl);
+                        // Save a safe, short placeholder URL to Firebase Auth so the API call compiles successfully.
+                        finalFirebasePhotoUrl = 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=150&auto=format&fit=crop&q=60';
+                    } else {
+                        // User chose a preset URL or pasted an external direct link
+                        localStorage.removeItem(`stellarOS_avatar_${auth.currentUser.uid}`);
+                    }
+
                     await updateProfile(auth.currentUser, {
                         displayName: combinedName,
-                        photoURL: selectedAvatarUrl
+                        photoURL: finalFirebasePhotoUrl
                     });
                     
                     showToast("stellarOS ID setup successful!", "✨");
@@ -1207,10 +1226,11 @@
                 document.getElementById('profile-display-input').value = displayName;
                 document.getElementById('profile-username-input').value = username;
                 
-                if (auth.currentUser.photoURL && auth.currentUser.photoURL.startsWith('http')) {
-                    document.getElementById('profile-pfp-input').value = auth.currentUser.photoURL;
-                    selectedAvatarUrl = auth.currentUser.photoURL;
+                const currentAvatar = getResolvedAvatarUrl(auth.currentUser);
+                if (currentAvatar && currentAvatar.startsWith('http')) {
+                    document.getElementById('profile-pfp-input').value = currentAvatar;
                 }
+                selectedAvatarUrl = currentAvatar;
 
                 showView('auth-profile-setup-view');
             }
@@ -1286,12 +1306,12 @@
                     const canvas = document.getElementById('offscreen-compressor');
                     const ctx = canvas.getContext('2d');
                     
-                    // Compress and format to 120x120px to fit exactly in Google User Profile records securely
+                    // Compress and format to 120x120px to fit perfectly on standard resolution
                     canvas.width = 120;
                     canvas.height = 120;
                     ctx.drawImage(img, 0, 0, 120, 120);
                     
-                    selectedAvatarUrl = canvas.toDataURL('image/jpeg', 0.8);
+                    selectedAvatarUrl = canvas.toDataURL('image/jpeg', 0.85);
                     
                     // Visual state indicator update
                     document.querySelectorAll('.avatar-preset-btn').forEach(b => b.classList.remove('selected'));
