@@ -4,72 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>stellarOS</title>
+    <!-- Importing Poppins Light (300), Regular (400), and Medium (500) from Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
     
     <style>
         /* ==========================================
-           LIGHT MODE (Sunset / Soft Blue Theme) 
+           COLOR PALETTES (System-driven & Custom)
            ========================================== */
         :root {
-            --bg-color: #f0f4f8; /* Sliiiiightly blue-ish tint */
-            --logo-color: #707a8a; /* Slate gray */
-            --link-color: #2c3e50; /* Deep blue-gray */
-            --link-hover: #e67e22; /* Warm sunset accent on hover */
-            --border-style: linear-gradient(90deg, #ff7e5f, #feb47b); /* Sunset gradient border */
+            /* Light Mode Theme */
+            --bg-color: #f0f4f8; 
+            --logo-color: #f7fafc; /* Crisp white on dark menu */
+            --link-color: #cbd5e0; /* Slate/gray text on dark menu */
+            --link-hover: #ff7e5f; /* Sunset orange */
+            --text-main: #2d3748;
+            --text-muted: #5a6a85;
+            --header-bg: #141b26; /* Darker menu bar background (deep slate) */
+            --divider-line: rgba(44, 62, 80, 0.1);
+            --input-bg: #ffffff;
+            --input-border: #cbd5e1;
+            --btn-bg: #141b26;
+            --btn-text: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.5);
         }
 
-        /* ==========================================
-           DARK MODE (Space Blue Theme)
-           ========================================== */
         @media (prefers-color-scheme: dark) {
             :root {
-                --bg-color: #0b0f19; /* Deep space blue */
-                --logo-color: #a0aec0; /* Lighter cosmic gray */
-                --link-color: #e2e8f0; /* Crisp starlight white */
-                --link-hover: #58a6ff; /* Vibrant nebular blue on hover */
-                --border-style: linear-gradient(90deg, #1f293d, #384d72); /* Deep space divider */
+                /* Dark Mode Theme */
+                --bg-color: #0b0f19; /* Deep Space Blue */
+                --logo-color: #f7fafc; /* Cosmic silver */
+                --link-color: #cbd5e0; /* Bright starlight gray */
+                --link-hover: #58a6ff; /* Space blue */
+                --text-main: #f7fafc;
+                --text-muted: #a0aec0;
+                --header-bg: #070a12; /* Extremely dark cosmic black menu bar */
+                --divider-line: rgba(255, 255, 255, 0.1);
+                --input-bg: #111827;
+                --input-border: #374151;
+                --btn-bg: #58a6ff;
+                --btn-text: #0b0f19;
+                --card-bg: rgba(255, 255, 255, 0.02);
             }
         }
 
-        /* Base styles using variables */
+        /* Base Reset & Styling */
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             margin: 0;
             padding: 0;
             font-family: 'Poppins', sans-serif;
             font-weight: 300;
             background-color: var(--bg-color);
+            color: var(--text-main);
             -webkit-font-smoothing: antialiased;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.4s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Header layout */
+        /* Header layout containing the OS name and the menu */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 20px 40px;
-            position: relative;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: var(--header-bg); /* Dark menu bar background */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: padding 0.3s ease, background-color 0.3s ease;
         }
 
-        /* Custom bottom border using the theme gradients */
-        header::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: var(--border-style);
-        }
-
-        /* Specific gray styling for the lowercase OS name */
+        /* Specific silver/white styling for the lowercase OS name */
         .logo {
             font-size: 24px;
             color: var(--logo-color);
-            text-transform: none;
-            transition: color 0.3s ease;
+            text-transform: none; /* Ensures exact capitalization */
+            letter-spacing: -0.5px;
+            font-weight: 400;
         }
 
         /* Navigation menu styling */
@@ -84,13 +103,377 @@
         nav a {
             text-decoration: none;
             color: var(--link-color);
-            font-size: 16px;
+            font-size: 15px;
             transition: color 0.2s ease;
+            cursor: pointer;
+            padding: 5px 0;
+            position: relative;
         }
 
-        nav a:hover {
+        nav a:hover, nav a.active {
             color: var(--link-hover);
         }
+
+        /* Underline effect for active menu items */
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--link-hover);
+            transition: width 0.2s ease;
+        }
+
+        nav a.active::after {
+            width: 100%;
+        }
+
+        /* Main Content Container */
+        main {
+            flex-grow: 1;
+            padding: 60px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Page Section Styling (Hidden by default, shown when active) */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ==========================================
+           OPEN TEXT SECTION (No borders, no frames)
+           ========================================== */
+        .about-open-content {
+            position: relative;
+            animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .about-open-content h1 {
+            font-size: 42px;
+            font-weight: 300;
+            margin-top: 0;
+            margin-bottom: 24px;
+            color: var(--text-main);
+            letter-spacing: -1px;
+            line-height: 1.2;
+        }
+
+        .about-open-content p.subtitle {
+            font-size: 18px;
+            line-height: 1.8;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            max-width: 750px;
+        }
+
+        /* Open Grid with subtle reveal-on-scroll styles */
+        .open-feature-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px 40px;
+            margin-bottom: 40px;
+        }
+
+        @media (min-width: 768px) {
+            .open-feature-grid {
+                grid-template-columns: 1fr 1fr; /* 2-column layout */
+            }
+        }
+
+        /* Modern, minimal grid item layout without wrappers/frames */
+        .open-feature-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 0; 
+            background-color: transparent; 
+            border: none; 
+            box-shadow: none; 
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideUpFadeItem 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Subtle transition for clean interaction */
+        .open-feature-item:hover .item-marker {
+            color: var(--text-main);
+            padding-left: 4px;
+        }
+
+        /* Clean modern list bullet */
+        .item-marker {
+            color: var(--link-hover);
+            font-size: 13px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: all 0.2s ease;
+        }
+
+        .item-text {
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text-muted);
+        }
+
+        .and-more {
+            font-size: 18px;
+            color: var(--text-muted);
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+
+        .last-updated-banner {
+            font-size: 13px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--divider-line);
+            padding-top: 24px;
+            margin-top: 40px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Hero Placeholder for Testing Other Sections */
+        .hero-placeholder {
+            text-align: center;
+            padding: 100px 20px;
+            animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .hero-placeholder h2 {
+            font-size: 48px;
+            font-weight: 300;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+
+        .hero-placeholder p {
+            color: var(--text-muted);
+            font-size: 18px;
+        }
+
+        /* ==========================================
+           BETA ACCOUNT SYSTEM STYLING
+           ========================================== */
+        .beta-form-container {
+            max-width: 450px;
+            margin: 0 auto;
+            padding-top: 20px;
+            animation: slideUpFade 0.5s ease forwards;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .form-group input {
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--input-border);
+            background-color: var(--input-bg);
+            color: var(--text-main);
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: var(--link-hover);
+            box-shadow: 0 0 0 3px rgba(255, 126, 95, 0.15);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 15px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        .btn-submit:hover {
+            opacity: 0.9;
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .auth-switch span {
+            color: var(--link-hover);
+            cursor: pointer;
+            font-weight: 400;
+        }
+
+        /* Setup / Config Card for Local Environments */
+        .setup-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--divider-line);
+            padding: 24px;
+            border-radius: 12px;
+            margin-top: 40px;
+            font-size: 14px;
+        }
+
+        .setup-card h3 {
+            margin-top: 0;
+            font-weight: 400;
+            color: var(--text-main);
+        }
+
+        .setup-card pre {
+            background: #111827;
+            color: #10b981;
+            padding: 12px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+
+        /* Success & Status Card */
+        .status-container {
+            padding: 20px 0;
+            animation: slideUpFade 0.5s ease forwards;
+        }
+
+        .user-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background-color: rgba(255, 126, 95, 0.15);
+            color: #ff7e5f;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .user-badge {
+                background-color: rgba(88, 166, 255, 0.15);
+                color: #58a6ff;
+            }
+        }
+
+        .logout-btn {
+            background: transparent;
+            color: var(--link-hover);
+            border: 1px solid var(--link-hover);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            margin-top: 20px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .logout-btn:hover {
+            background-color: var(--link-hover);
+            color: #fff;
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #141b26;
+            color: #f8fafc;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Loading Indicator */
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border-left-color: var(--link-hover);
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ==========================================
+           SCROLL AND VIEWPORT ANIMATIONS
+           ========================================== */
+        @keyframes slideUpFade {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUpFadeItem {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Stagger loading transitions */
+        .open-feature-item:nth-child(1) { animation-delay: 0.1s; }
+        .open-feature-item:nth-child(2) { animation-delay: 0.15s; }
+        .open-feature-item:nth-child(3) { animation-delay: 0.2s; }
+        .open-feature-item:nth-child(4) { animation-delay: 0.25s; }
+        .open-feature-item:nth-child(5) { animation-delay: 0.3s; }
+        .open-feature-item:nth-child(6) { animation-delay: 0.35s; }
 
         /* Mobile Optimization */
         @media (max-width: 600px) {
@@ -108,25 +491,547 @@
             }
 
             nav a {
-                font-size: 15px;
+                font-size: 14px;
+            }
+
+            .about-open-content h1 {
+                font-size: 32px;
+            }
+
+            .about-open-content p.subtitle {
+                font-size: 16px;
+                margin-bottom: 30px;
             }
         }
     </style>
 </head>
 <body>
 
-    <header>
+    <header id="navbar">
+        <!-- The OS name in exact case & custom silver/white styling -->
         <div class="logo">stellarOS</div>
         
+        <!-- Requested navigation options -->
         <nav>
             <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">Downloads</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Requirements</a></li>
+                <li><a class="nav-link active" onclick="switchTab('home')">Home</a></li>
+                <li><a class="nav-link" onclick="switchTab('downloads')">Downloads</a></li>
+                <li><a class="nav-link" onclick="switchTab('beta')">Beta</a></li>
+                <li><a class="nav-link" onclick="switchTab('about')">About</a></li>
+                <li><a class="nav-link" onclick="switchTab('requirements')">Requirements</a></li>
             </ul>
         </nav>
     </header>
 
-    </body>
+    <main>
+        <!-- Home Section -->
+        <section id="home" class="tab-content active">
+            <div class="hero-placeholder">
+                <h2>Welcome to stellarOS</h2>
+                <p>Designed for performance, built for simplicity.</p>
+            </div>
+        </section>
+
+        <!-- Downloads Section -->
+        <section id="downloads" class="tab-content">
+            <div class="hero-placeholder">
+                <h2>Downloads</h2>
+                <p>Official public releases and boot images will be available here soon.</p>
+            </div>
+        </section>
+
+        <!-- Beta Section (With REAL Firebase Auth verification) -->
+        <section id="beta" class="tab-content">
+            <div class="about-open-content">
+                <h1>Beta Program Portal</h1>
+                <p class="subtitle" id="beta-intro">
+                    Be among the first to experience early innovations in stellarOS. Test cutting-edge builds, provide feedback, and help us refine features as we build a faster, lighter desktop.
+                </p>
+
+                <!-- Status View: When Authentication config is missing -->
+                <div id="auth-unconfigured-view" class="setup-card" style="display: none;">
+                    <h3>⚡ Setup Live Database Accounts</h3>
+                    <p>To connect your live site to a real user database with real email verification and secure password login for free, simply add your Firebase project configurations to this file's script block.</p>
+                    <p>Open <code>index.html</code>, look at the bottom script block, and paste your credentials inside the <code>fallbackConfig</code> object.</p>
+                    <p><strong>Want to test the layout immediately?</strong> No problem! We've loaded a fully responsive, fully-functional sandbox database flow so you can test how registration, login state caching, and the interface respond right now!</p>
+                    <button class="btn-submit" onclick="activateSandboxMode()" style="margin-top: 15px;">Launch Interactive Sandbox Mode</button>
+                </div>
+
+                <!-- 1. SIGN IN SCREEN -->
+                <div id="auth-signin-view" class="beta-form-container" style="display: none;">
+                    <form onsubmit="performSignIn(event)">
+                        <div class="form-group">
+                            <label for="signin-email">Email Address</label>
+                            <input type="email" id="signin-email" required placeholder="name@domain.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="signin-password">Password</label>
+                            <input type="password" id="signin-password" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn-submit" id="btn-signin-text">Sign In</button>
+                        <div class="auth-switch">
+                            Don't have an account yet? <span onclick="toggleAuthView('signup')">Sign Up</span>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 2. SIGN UP SCREEN -->
+                <div id="auth-signup-view" class="beta-form-container" style="display: none;">
+                    <form onsubmit="performSignUp(event)">
+                        <div class="form-group">
+                            <label for="signup-email">Email Address</label>
+                            <input type="email" id="signup-email" required placeholder="name@domain.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-password">Password</label>
+                            <input type="password" id="signup-password" required placeholder="Minimum 6 characters">
+                        </div>
+                        <button type="submit" class="btn-submit" id="btn-signup-text">Create Account</button>
+                        <div class="auth-switch">
+                            Already have an account? <span onclick="toggleAuthView('signin')">Sign In</span>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 3. EMAIL VERIFICATION SCREEN -->
+                <div id="auth-verify-view" class="beta-form-container" style="display: none;">
+                    <h2 style="font-size: 20px; font-weight: 400; margin-bottom: 8px;">Verify Your Email Address</h2>
+                    <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px;" id="verify-instructions">
+                        A real verification link has been sent to your inbox. Please click the link inside your email to activate your account.
+                    </p>
+                    <button onclick="checkEmailVerifiedStatus()" class="btn-submit" style="margin-bottom: 15px;">I've Verified My Email</button>
+                    <button onclick="resendVerificationLink()" class="btn-submit" style="background: transparent; color: var(--link-hover); border: 1px solid var(--link-hover)">Resend Email</button>
+                </div>
+
+                <!-- 4. LOGGED IN / ENROLLED STATUS VIEW -->
+                <div id="auth-status-view" class="status-container" style="display: none;">
+                    <div class="user-badge" id="badge-label">Beta Tester Account Active</div>
+                    <h2 style="font-size: 28px; font-weight: 300; margin: 10px 0 20px 0;" id="status-welcome">Welcome!</h2>
+                    
+                    <div class="open-feature-grid">
+                        <div class="open-feature-item">
+                            <span class="item-marker">Enrollment Status</span>
+                            <span class="item-text" id="enrollment-desc">Active. Your account is verified and queued for current stellarOS beta builds.</span>
+                        </div>
+                        <div class="open-feature-item">
+                            <span class="item-marker">Direct Feedback</span>
+                            <span class="item-text">Report performance bugs and help refine native apps on low-end systems.</span>
+                        </div>
+                    </div>
+
+                    <button class="logout-btn" onclick="performLogout()">Sign Out</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section (Requested Content - Now completely open and card-less) -->
+        <section id="about" class="tab-content">
+            <div class="about-open-content">
+                <h1>What is stellarOS?</h1>
+                <p class="subtitle">
+                    stellarOS is a custom-monolithic kernel-based Operating System designed from the ground up for lightning-fast performance, daily dependability, and high-performance gaming.
+                </p>
+
+                <div class="open-feature-grid">
+                    <!-- Feature Item 1 -->
+                    <div class="open-feature-item">
+                        <span class="item-marker">Performance</span>
+                        <span class="item-text">Fast performance on low-end devices. Optimized to preserve hardware resources.</span>
+                    </div>
+
+                    <!-- Feature Item 2 -->
+                    <div class="open-feature-item">
+                        <span class="item-marker">Creativity</span>
+                        <span class="item-text">Creativity-focused first-party programs developed native to the OS.</span>
+                    </div>
+
+                    <!-- Feature Item 3 -->
+                    <div class="open-feature-item">
+                        <span class="item-marker">Design</span>
+                        <span class="item-text">Beautiful interface layouts crafted with precision, lightweight on processing threads.</span>
+                    </div>
+
+                    <!-- Feature Item 4 -->
+                    <div class="open-feature-item">
+                        <span class="item-marker">Control</span>
+                        <span class="item-text">Wide variety of deep system customization options to construct your space.</span>
+                    </div>
+
+                    <!-- Feature Item 5 -->
+                    <div class="open-feature-item">
+                        <span class="item-marker">Intelligence</span>
+                        <span class="item-text">Seamless cloud-based Artificial Intelligence utilities using Google Gemini 3.5 Flash.</span>
+                    </div>
+
+                    <!-- Feature Item 6 -->
+                    <div class="open-feature-item">
+                        <span class="item-marker">Simplicity</span>
+                        <span class="item-text">User-friendly operating flow built alongside a fast, painless installer.</span>
+                    </div>
+                </div>
+
+                <div class="and-more">And much more!</div>
+
+                <div class="last-updated-banner">
+                    Last updated: 11/7/2026
+                </div>
+            </div>
+        </section>
+
+        <!-- Requirements Section -->
+        <section id="requirements" class="tab-content">
+            <div class="hero-placeholder">
+                <h2>System Requirements</h2>
+                <p>Hardware and architecture details will be listed soon.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Visual Popup Notification (Toast) -->
+    <div id="toast" class="toast">
+        <span id="toast-icon">📧</span>
+        <span id="toast-message">Verification email successfully sent!</span>
+    </div>
+
+    <!-- Firebase Script Load & App Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword, 
+            sendEmailVerification, 
+            onAuthStateChanged, 
+            signOut,
+            reload
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // =========================================================
+        // PLACE YOUR REAL FIREBASE API CONFIGURATION KEYS HERE:
+        // =========================================================
+        const fallbackConfig = {
+            apiKey: "",
+            authDomain: "",
+            projectId: "",
+            storageBucket: "",
+            messagingSenderId: "",
+            appId: ""
+        };
+
+        let app, auth;
+        let isRealAuthAvailable = false;
+        let isSandboxMode = false;
+
+        // Try getting environment variables first, then default to custom config
+        const firebaseConfigStr = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
+        let finalConfig = firebaseConfigStr ? JSON.parse(firebaseConfigStr) : fallbackConfig;
+
+        // Check if config has been setup/populated
+        if (finalConfig && finalConfig.apiKey !== "") {
+            try {
+                app = initializeApp(finalConfig);
+                auth = getAuth(app);
+                isRealAuthAvailable = true;
+            } catch (e) {
+                console.warn("Firebase initialization failed, falling back to setup wizard:", e);
+            }
+        }
+
+        // Initialize state view inside window load
+        window.addEventListener('DOMContentLoaded', () => {
+            if (isRealAuthAvailable) {
+                // Monitor the active user status with real Firebase Auth persistence
+                onAuthStateChanged(auth, (user) => {
+                    handleUserStateChange(user);
+                });
+            } else {
+                // Check if sandbox is already active in local cache
+                if (localStorage.getItem('stellarOS_sandbox_active') === 'true') {
+                    activateSandboxMode();
+                } else {
+                    showView('auth-unconfigured-view');
+                }
+            }
+        });
+
+        // Toggle user auth panels
+        window.toggleAuthView = function(view) {
+            if (view === 'signin') {
+                showView('auth-signin-view');
+            } else {
+                showView('auth-signup-view');
+            }
+        };
+
+        function showView(viewId) {
+            const views = [
+                'auth-unconfigured-view', 
+                'auth-signin-view', 
+                'auth-signup-view', 
+                'auth-verify-view', 
+                'auth-status-view'
+            ];
+            views.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.style.display = (id === viewId) ? 'block' : 'none';
+                }
+            });
+        }
+
+        // Handle Visual State Based on Authenticated session
+        function handleUserStateChange(user) {
+            if (user) {
+                if (user.emailVerified) {
+                    showView('auth-status-view');
+                    document.getElementById('status-welcome').innerText = `Welcome, ${user.email}`;
+                    document.getElementById('badge-label').innerText = "Beta Tester Account Active";
+                    document.getElementById('enrollment-desc').innerText = "Active. Your account is verified and queued for current stellarOS beta builds.";
+                    document.getElementById('beta-intro').style.display = 'none';
+                } else {
+                    // Signed in but email not verified yet
+                    showView('auth-verify-view');
+                    document.getElementById('beta-intro').style.display = 'block';
+                }
+            } else {
+                showView('auth-signup-view');
+                document.getElementById('beta-intro').style.display = 'block';
+            }
+        }
+
+        // =========================================================
+        // CORE AUTHENTICATION LOGIC (Real Firebase & Sandbox Modes)
+        // =========================================================
+
+        // Real Sign Up with Firebase
+        window.performSignUp = async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const submitBtn = document.getElementById('btn-signup-text');
+
+            if (password.length < 6) {
+                showToast("Password must be at least 6 characters long.", "⚠️");
+                return;
+            }
+
+            if (isSandboxMode) {
+                // Sandbox simulation
+                let users = JSON.parse(localStorage.getItem('stellarOS_sb_users')) || [];
+                if (users.some(u => u.email === email)) {
+                    showToast("Email already exists in Sandbox mode.", "⚠️");
+                    return;
+                }
+                const newUser = { email, password, emailVerified: false };
+                users.push(newUser);
+                localStorage.setItem('stellarOS_sb_users', JSON.stringify(users));
+                localStorage.setItem('stellarOS_sb_active', JSON.stringify(newUser));
+                
+                showToast("Sandbox account created! Simulated verification code sent.", "📬");
+                checkSandboxState();
+                return;
+            }
+
+            // Real Firebase Mode
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<span class="spinner"></span> Creating Account...`;
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                // Send the real Verification Link to their Gmail/inbox
+                await sendEmailVerification(userCredential.user);
+                showToast("Account created! Real verification link sent to your email.", "✉️");
+                handleUserStateChange(userCredential.user);
+            } catch (error) {
+                showToast(error.message, "❌");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Create Account";
+            }
+        };
+
+        // Real Sign In with Firebase
+        window.performSignIn = async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('signin-email').value;
+            const password = document.getElementById('signin-password').value;
+            const submitBtn = document.getElementById('btn-signin-text');
+
+            if (isSandboxMode) {
+                let users = JSON.parse(localStorage.getItem('stellarOS_sb_users')) || [];
+                const matched = users.find(u => u.email === email && u.password === password);
+                if (matched) {
+                    localStorage.setItem('stellarOS_sb_active', JSON.stringify(matched));
+                    showToast("Successfully logged into Sandbox!", "🔑");
+                    checkSandboxState();
+                } else {
+                    showToast("Invalid credentials in sandbox database.", "❌");
+                }
+                return;
+            }
+
+            // Real Firebase Mode
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<span class="spinner"></span> Signing In...`;
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                showToast("Signed in successfully!", "✨");
+                handleUserStateChange(userCredential.user);
+            } catch (error) {
+                showToast(error.message, "❌");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Sign In";
+            }
+        };
+
+        // Real Verification Check with Firebase
+        window.checkEmailVerifiedStatus = async function() {
+            if (isSandboxMode) {
+                let active = JSON.parse(localStorage.getItem('stellarOS_sb_active'));
+                if (active) {
+                    active.emailVerified = true;
+                    localStorage.setItem('stellarOS_sb_active', JSON.stringify(active));
+                    // Update database
+                    let users = JSON.parse(localStorage.getItem('stellarOS_sb_users')) || [];
+                    users = users.map(u => u.email === active.email ? active : u);
+                    localStorage.setItem('stellarOS_sb_users', JSON.stringify(users));
+                    showToast("Sandbox Email successfully verified!", "✨");
+                    checkSandboxState();
+                }
+                return;
+            }
+
+            // Real Firebase Mode
+            if (auth.currentUser) {
+                try {
+                    await reload(auth.currentUser);
+                    if (auth.currentUser.emailVerified) {
+                        showToast("Email successfully verified! Welcome to Beta.", "✨");
+                        handleUserStateChange(auth.currentUser);
+                    } else {
+                        showToast("Your email has not been verified yet. Check spam folder!", "⚠️");
+                    }
+                } catch (error) {
+                    showToast("Failed to refresh user status: " + error.message, "❌");
+                }
+            }
+        };
+
+        // Real Resend Link with Firebase
+        window.resendVerificationLink = async function() {
+            if (isSandboxMode) {
+                showToast("Simulated verification link resent successfully!", "✉️");
+                return;
+            }
+
+            if (auth.currentUser) {
+                try {
+                    await sendEmailVerification(auth.currentUser);
+                    showToast("Verification link successfully resent to your inbox!", "✉️");
+                } catch (error) {
+                    showToast(error.message, "❌");
+                }
+            }
+        };
+
+        // Real Logout with Firebase
+        window.performLogout = async function() {
+            if (isSandboxMode) {
+                localStorage.removeItem('stellarOS_sb_active');
+                showToast("Logged out of Sandbox.", "👋");
+                checkSandboxState();
+                return;
+            }
+
+            try {
+                await signOut(auth);
+                showToast("Signed out successfully.", "👋");
+            } catch (error) {
+                showToast(error.message, "❌");
+            }
+        };
+
+        // ==========================================
+        // LOCAL INTERACTIVE SANDBOX CONTROL
+        // ==========================================
+        window.activateSandboxMode = function() {
+            isSandboxMode = true;
+            localStorage.setItem('stellarOS_sandbox_active', 'true');
+            checkSandboxState();
+        };
+
+        function checkSandboxState() {
+            const activeUser = JSON.parse(localStorage.getItem('stellarOS_sb_active'));
+            if (activeUser) {
+                if (activeUser.emailVerified) {
+                    showView('auth-status-view');
+                    document.getElementById('status-welcome').innerText = `Welcome, ${activeUser.email}`;
+                    document.getElementById('badge-label').innerText = "Sandbox Enrolled Active";
+                    document.getElementById('enrollment-desc').innerText = "Active. You are running in Sandbox Testing Mode. To make accounts real, input Firebase credentials in code script.";
+                    document.getElementById('beta-intro').style.display = 'none';
+                } else {
+                    showView('auth-verify-view');
+                    document.getElementById('verify-instructions').innerText = "Simulating Verification Email. For sandbox testing, simply click the 'I've Verified My Email' button below to simulate verification.";
+                    document.getElementById('beta-intro').style.display = 'block';
+                }
+            } else {
+                showView('auth-signup-view');
+                document.getElementById('beta-intro').style.display = 'block';
+            }
+        }
+
+        // Action Toast Notification Popup
+        function showToast(message, icon = "📧") {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = message;
+            document.getElementById('toast-icon').innerText = icon;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 5000);
+        }
+    </script>
+
+    <script>
+        // Sticky Header shrink logic
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 20) {
+                navbar.style.padding = "14px 40px";
+            } else {
+                navbar.style.padding = "20px 40px";
+            }
+        });
+
+        // Clean kinetic tab transitions
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            const targetSection = document.getElementById(tabId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+
+            const clickedLink = Array.from(document.querySelectorAll('.nav-link')).find(link => 
+                link.getAttribute('onclick').includes(`'${tabId}'`)
+            );
+            if (clickedLink) {
+                clickedLink.classList.add('active');
+            }
+        }
+    </script>
+</body>
 </html>
+
