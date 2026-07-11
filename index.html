@@ -335,31 +335,6 @@
             font-weight: 400;
         }
 
-        /* Setup / Config Card for Local Environments */
-        .setup-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--divider-line);
-            padding: 24px;
-            border-radius: 12px;
-            margin-top: 40px;
-            font-size: 14px;
-        }
-
-        .setup-card h3 {
-            margin-top: 0;
-            font-weight: 400;
-            color: var(--text-main);
-        }
-
-        .setup-card pre {
-            background: #111827;
-            color: #10b981;
-            padding: 12px;
-            border-radius: 6px;
-            overflow-x: auto;
-            font-size: 12px;
-        }
-
         /* Success & Status Card */
         .status-container {
             padding: 20px 0;
@@ -548,15 +523,6 @@
                     Be among the first to experience early innovations in stellarOS. Test cutting-edge builds, provide feedback, and help us refine features as we build a faster, lighter desktop.
                 </p>
 
-                <!-- Status View: When Authentication config is missing -->
-                <div id="auth-unconfigured-view" class="setup-card" style="display: none;">
-                    <h3>⚡ Setup Live Database Accounts</h3>
-                    <p>To connect your live site to a real user database with real email verification and secure password login for free, simply add your Firebase project configurations to this file's script block.</p>
-                    <p>Open <code>index.html</code>, look at the bottom script block, and paste your credentials inside the <code>fallbackConfig</code> object.</p>
-                    <p><strong>Want to test the layout immediately?</strong> No problem! We've loaded a fully responsive, fully-functional sandbox database flow so you can test how registration, login state caching, and the interface respond right now!</p>
-                    <button class="btn-submit" onclick="activateSandboxMode()" style="margin-top: 15px;">Launch Interactive Sandbox Mode</button>
-                </div>
-
                 <!-- 1. SIGN IN SCREEN -->
                 <div id="auth-signin-view" class="beta-form-container" style="display: none;">
                     <form onsubmit="performSignIn(event)">
@@ -605,7 +571,7 @@
 
                 <!-- 4. LOGGED IN / ENROLLED STATUS VIEW -->
                 <div id="auth-status-view" class="status-container" style="display: none;">
-                    <div class="user-badge" id="badge-label">Beta Tester Account Active</div>
+                    <div class="user-badge">Beta Tester Account Active</div>
                     <h2 style="font-size: 28px; font-weight: 300; margin: 10px 0 20px 0;" id="status-welcome">Welcome!</h2>
                     
                     <div class="open-feature-grid">
@@ -706,55 +672,29 @@
             reload
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // =========================================================
-        // PLACE YOUR REAL FIREBASE API CONFIGURATION KEYS HERE:
-        // =========================================================
-        const fallbackConfig = {
-            apiKey: "",
-            authDomain: "",
-            projectId: "",
-            storageBucket: "",
-            messagingSenderId: "",
-            appId: ""
+        // =========================================================================
+        // YOUR LIVE ENCRYPTED FIREBASE CONFIGURATION (Verified)
+        // =========================================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyAKlMEAGWBuBfcCDzc3D6bg4-C-phhcTqU",
+            authDomain: "stellaros-auth.firebaseapp.com",
+            projectId: "stellaros-auth",
+            storageBucket: "stellaros-auth.firebasestorage.app",
+            messagingSenderId: "324878436535",
+            appId: "1:324878436535:web:f83452267864f054b62532",
+            measurementId: "G-D35DKGH3MS"
         };
 
-        let app, auth;
-        let isRealAuthAvailable = false;
-        let isSandboxMode = false;
+        // Initialize Firebase services
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
 
-        // Try getting environment variables first, then default to custom config
-        const firebaseConfigStr = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
-        let finalConfig = firebaseConfigStr ? JSON.parse(firebaseConfigStr) : fallbackConfig;
-
-        // Check if config has been setup/populated
-        if (finalConfig && finalConfig.apiKey !== "") {
-            try {
-                app = initializeApp(finalConfig);
-                auth = getAuth(app);
-                isRealAuthAvailable = true;
-            } catch (e) {
-                console.warn("Firebase initialization failed, falling back to setup wizard:", e);
-            }
-        }
-
-        // Initialize state view inside window load
-        window.addEventListener('DOMContentLoaded', () => {
-            if (isRealAuthAvailable) {
-                // Monitor the active user status with real Firebase Auth persistence
-                onAuthStateChanged(auth, (user) => {
-                    handleUserStateChange(user);
-                });
-            } else {
-                // Check if sandbox is already active in local cache
-                if (localStorage.getItem('stellarOS_sandbox_active') === 'true') {
-                    activateSandboxMode();
-                } else {
-                    showView('auth-unconfigured-view');
-                }
-            }
+        // Monitor active user persistence states across restarts
+        onAuthStateChanged(auth, (user) => {
+            handleUserStateChange(user);
         });
 
-        // Toggle user auth panels
+        // Toggle user login panels
         window.toggleAuthView = function(view) {
             if (view === 'signin') {
                 showView('auth-signin-view');
@@ -765,7 +705,6 @@
 
         function showView(viewId) {
             const views = [
-                'auth-unconfigured-view', 
                 'auth-signin-view', 
                 'auth-signup-view', 
                 'auth-verify-view', 
@@ -779,17 +718,14 @@
             });
         }
 
-        // Handle Visual State Based on Authenticated session
+        // Handle structural view updates depending on verification status
         function handleUserStateChange(user) {
             if (user) {
                 if (user.emailVerified) {
                     showView('auth-status-view');
                     document.getElementById('status-welcome').innerText = `Welcome, ${user.email}`;
-                    document.getElementById('badge-label').innerText = "Beta Tester Account Active";
-                    document.getElementById('enrollment-desc').innerText = "Active. Your account is verified and queued for current stellarOS beta builds.";
                     document.getElementById('beta-intro').style.display = 'none';
                 } else {
-                    // Signed in but email not verified yet
                     showView('auth-verify-view');
                     document.getElementById('beta-intro').style.display = 'block';
                 }
@@ -799,11 +735,7 @@
             }
         }
 
-        // =========================================================
-        // CORE AUTHENTICATION LOGIC (Real Firebase & Sandbox Modes)
-        // =========================================================
-
-        // Real Sign Up with Firebase
+        // Real Sign Up with Live Email Verification Dispatch
         window.performSignUp = async function(e) {
             e.preventDefault();
             const email = document.getElementById('signup-email').value;
@@ -815,30 +747,12 @@
                 return;
             }
 
-            if (isSandboxMode) {
-                // Sandbox simulation
-                let users = JSON.parse(localStorage.getItem('stellarOS_sb_users')) || [];
-                if (users.some(u => u.email === email)) {
-                    showToast("Email already exists in Sandbox mode.", "⚠️");
-                    return;
-                }
-                const newUser = { email, password, emailVerified: false };
-                users.push(newUser);
-                localStorage.setItem('stellarOS_sb_users', JSON.stringify(users));
-                localStorage.setItem('stellarOS_sb_active', JSON.stringify(newUser));
-                
-                showToast("Sandbox account created! Simulated verification code sent.", "📬");
-                checkSandboxState();
-                return;
-            }
-
-            // Real Firebase Mode
             submitBtn.disabled = true;
             submitBtn.innerHTML = `<span class="spinner"></span> Creating Account...`;
 
             try {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                // Send the real Verification Link to their Gmail/inbox
+                // Dispatching real confirmation verification email link to the inbox
                 await sendEmailVerification(userCredential.user);
                 showToast("Account created! Real verification link sent to your email.", "✉️");
                 handleUserStateChange(userCredential.user);
@@ -850,27 +764,13 @@
             }
         };
 
-        // Real Sign In with Firebase
+        // Real Sign In
         window.performSignIn = async function(e) {
             e.preventDefault();
             const email = document.getElementById('signin-email').value;
             const password = document.getElementById('signin-password').value;
             const submitBtn = document.getElementById('btn-signin-text');
 
-            if (isSandboxMode) {
-                let users = JSON.parse(localStorage.getItem('stellarOS_sb_users')) || [];
-                const matched = users.find(u => u.email === email && u.password === password);
-                if (matched) {
-                    localStorage.setItem('stellarOS_sb_active', JSON.stringify(matched));
-                    showToast("Successfully logged into Sandbox!", "🔑");
-                    checkSandboxState();
-                } else {
-                    showToast("Invalid credentials in sandbox database.", "❌");
-                }
-                return;
-            }
-
-            // Real Firebase Mode
             submitBtn.disabled = true;
             submitBtn.innerHTML = `<span class="spinner"></span> Signing In...`;
 
@@ -886,24 +786,8 @@
             }
         };
 
-        // Real Verification Check with Firebase
+        // Verification checking triggers reloading the firebase cached token
         window.checkEmailVerifiedStatus = async function() {
-            if (isSandboxMode) {
-                let active = JSON.parse(localStorage.getItem('stellarOS_sb_active'));
-                if (active) {
-                    active.emailVerified = true;
-                    localStorage.setItem('stellarOS_sb_active', JSON.stringify(active));
-                    // Update database
-                    let users = JSON.parse(localStorage.getItem('stellarOS_sb_users')) || [];
-                    users = users.map(u => u.email === active.email ? active : u);
-                    localStorage.setItem('stellarOS_sb_users', JSON.stringify(users));
-                    showToast("Sandbox Email successfully verified!", "✨");
-                    checkSandboxState();
-                }
-                return;
-            }
-
-            // Real Firebase Mode
             if (auth.currentUser) {
                 try {
                     await reload(auth.currentUser);
@@ -911,7 +795,7 @@
                         showToast("Email successfully verified! Welcome to Beta.", "✨");
                         handleUserStateChange(auth.currentUser);
                     } else {
-                        showToast("Your email has not been verified yet. Check spam folder!", "⚠️");
+                        showToast("Your email has not been verified yet. Check your spam folder!", "⚠️");
                     }
                 } catch (error) {
                     showToast("Failed to refresh user status: " + error.message, "❌");
@@ -919,13 +803,8 @@
             }
         };
 
-        // Real Resend Link with Firebase
+        // Resend Verification link
         window.resendVerificationLink = async function() {
-            if (isSandboxMode) {
-                showToast("Simulated verification link resent successfully!", "✉️");
-                return;
-            }
-
             if (auth.currentUser) {
                 try {
                     await sendEmailVerification(auth.currentUser);
@@ -936,15 +815,8 @@
             }
         };
 
-        // Real Logout with Firebase
+        // Sign Out trigger
         window.performLogout = async function() {
-            if (isSandboxMode) {
-                localStorage.removeItem('stellarOS_sb_active');
-                showToast("Logged out of Sandbox.", "👋");
-                checkSandboxState();
-                return;
-            }
-
             try {
                 await signOut(auth);
                 showToast("Signed out successfully.", "👋");
@@ -953,36 +825,7 @@
             }
         };
 
-        // ==========================================
-        // LOCAL INTERACTIVE SANDBOX CONTROL
-        // ==========================================
-        window.activateSandboxMode = function() {
-            isSandboxMode = true;
-            localStorage.setItem('stellarOS_sandbox_active', 'true');
-            checkSandboxState();
-        };
-
-        function checkSandboxState() {
-            const activeUser = JSON.parse(localStorage.getItem('stellarOS_sb_active'));
-            if (activeUser) {
-                if (activeUser.emailVerified) {
-                    showView('auth-status-view');
-                    document.getElementById('status-welcome').innerText = `Welcome, ${activeUser.email}`;
-                    document.getElementById('badge-label').innerText = "Sandbox Enrolled Active";
-                    document.getElementById('enrollment-desc').innerText = "Active. You are running in Sandbox Testing Mode. To make accounts real, input Firebase credentials in code script.";
-                    document.getElementById('beta-intro').style.display = 'none';
-                } else {
-                    showView('auth-verify-view');
-                    document.getElementById('verify-instructions').innerText = "Simulating Verification Email. For sandbox testing, simply click the 'I've Verified My Email' button below to simulate verification.";
-                    document.getElementById('beta-intro').style.display = 'block';
-                }
-            } else {
-                showView('auth-signup-view');
-                document.getElementById('beta-intro').style.display = 'block';
-            }
-        }
-
-        // Action Toast Notification Popup
+        // Toast notifications logic
         function showToast(message, icon = "📧") {
             const toast = document.getElementById('toast');
             document.getElementById('toast-message').innerText = message;
@@ -1005,7 +848,7 @@
             }
         });
 
-        // Clean kinetic tab transitions
+        // Tab changes with kinetic scroll support
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(section => {
                 section.classList.remove('active');
