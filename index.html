@@ -1571,5 +1571,46 @@
             }
         }
     </script>
+    
+    <script>
+    // Just add translations for whatever words you want to swap
+    const dict = {
+        "es": {
+            "Home": "Inicio",
+            "Downloads": "Descargas",
+            "Beta": "Beta",
+            "About": "Acerca de",
+            "Requirements": "Requisitos",
+            "Beta Program Portal": "Portal del Programa Beta"
+        },
+        "fr": {
+            "Home": "Accueil",
+            "Downloads": "Téléchargements",
+            "Beta": "Bêta",
+            "About": "À propos",
+            "Requirements": "Configuration"
+        }
+    };
+
+    // Automatically detects user language (e.g., 'es', 'en')
+    const userLang = navigator.language || navigator.userLanguage;
+    const langKey = userLang.split('-')[0]; 
+
+    // Auto-translates the page if the language exists in our dictionary
+    if (dict[langKey]) {
+        const translateText = (node) => {
+            if (node.nodeType === Node.TEXT_NODE) {
+                const trimmed = node.textContent.trim();
+                if (dict[langKey][trimmed]) {
+                    node.textContent = node.textContent.replace(trimmed, dict[langKey][trimmed]);
+                }
+            } else {
+                node.childNodes.forEach(translateText);
+            }
+        };
+        translateText(document.body);
+    }
+</script>
+
 </body>
 </html>
