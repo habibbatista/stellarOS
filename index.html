@@ -1574,73 +1574,76 @@
     
 
 <script>
-    const userLang = navigator.language || navigator.userLanguage;
-    const langKey = userLang.split('-')[0]; 
+    document.addEventListener("DOMContentLoaded", () => {
+        const userLang = navigator.language || navigator.userLanguage;
+        const langKey = userLang.split('-')[0]; 
 
-    // 1. Force the title changes across both English and Spanish views immediately
-    const betaTitleElement = document.querySelector('#beta h1');
-    const profileTitleElement = document.querySelector('.profile-details-area h2');
-    const profileSetupTitleElement = document.querySelector('#auth-profile-setup-view h2');
+        // Safe element selectors
+        const betaTitleElement = document.querySelector('#beta h1');
+        const profileTitleElement = document.querySelector('.profile-details-area h2');
+        const profileSetupTitleElement = document.querySelector('#auth-profile-setup-view h2');
 
-    if (langKey === 'es') {
-        // Apply full Spanish dictionary translations directly to elements
-        if (betaTitleElement) betaTitleElement.textContent = "Programa de Inscripción Beta de stellarOS";
-        if (profileTitleElement) profileTitleElement.textContent = "ID de stellarOS";
-        if (profileSetupTitleElement) profileSetupTitleElement.textContent = "Configura tu ID de stellarOS";
+        if (langKey === 'es') {
+            // Apply Spanish translations safely without overwriting structural containers
+            if (betaTitleElement) betaTitleElement.textContent = "Programa de Inscripción Beta de stellarOS";
+            if (profileTitleElement) profileTitleElement.textContent = "ID de stellarOS";
+            if (profileSetupTitleElement) profileSetupTitleElement.textContent = "Configura tu ID de stellarOS";
 
-        // Navigation Tabs Translation
-        document.querySelectorAll('.nav-link').forEach(link => {
-            const tabs = {
-                "Home": "Inicio",
-                "Downloads": "Descargas",
-                "Beta": "Beta",
-                "About": "Acerca de",
-                "Requirements": "Requisitos"
+            // Navigation Tabs Translation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                const tabs = {
+                    "Home": "Inicio",
+                    "Downloads": "Descargas",
+                    "Beta": "Beta",
+                    "About": "Acerca de",
+                    "Requirements": "Requisitos"
+                };
+                const text = link.textContent.trim();
+                if (tabs[text]) link.textContent = tabs[text];
+            });
+
+            // About Tab Main Content Headers & Paragraphs
+            const aboutHeader = document.querySelector('#about h1');
+            if (aboutHeader) aboutHeader.textContent = "¿Qué es stellarOS?";
+
+            const aboutSubtitle = document.querySelector('#about p.subtitle');
+            if (aboutSubtitle) aboutSubtitle.textContent = "stellarOS es un sistema operativo personalizado basado en un núcleo monolítico, diseñado desde cero para un rendimiento ultrarrápido, confiabilidad diaria y juegos de alto rendimiento.";
+
+            // Feature Grids Map
+            const featureTranslations = {
+                "PERFORMANCE": ["RENDIMIENTO", "Rendimiento rápido en dispositivos de gama baja. Optimizado para preservar los recursos de hardware."],
+                "CREATIVITY": ["CREATIVIDAD", "Programas de primera mano enfocados en la creatividad, desarrollados de forma nativa para el sistema operativo."],
+                "DESIGN": ["DISEÑO", "Hermosos diseños de interfaz creados con precisión, ligeros en los hilos de procesamiento."],
+                "CONTROL": ["CONTROL", "Gran variedad de opciones de personalización profunda del sistema para construir tu espacio."],
+                "INTELLIGENCE": ["INTELIGENCIA", "Utilidades de Inteligencia Artificial basadas en la nube sin interrupciones usando Google Gemini 3.5 Flash."],
+                "SIMPLICITY": ["SIMPLICIDAD", "Flujo operativo intuitivo diseñado junto con un instalador rápido y sin complicaciones."]
             };
-            const text = link.textContent.trim();
-            if (tabs[text]) link.textContent = tabs[text];
-        });
 
-        // About Tab Main Content Headers & Paragraphs
-        const aboutHeader = document.querySelector('#about h1');
-        if (aboutHeader) aboutHeader.textContent = "¿Qué es stellarOS?";
+            document.querySelectorAll('.open-feature-item').forEach(item => {
+                const marker = item.querySelector('.item-marker');
+                const textEl = item.querySelector('.item-text');
+                if (marker && featureTranslations[marker.textContent.trim()]) {
+                    const key = marker.textContent.trim();
+                    marker.textContent = featureTranslations[key][0];
+                    if (textEl) textEl.textContent = featureTranslations[key][1];
+                }
+            });
 
-        const aboutSubtitle = document.querySelector('#about p.subtitle');
-        if (aboutSubtitle) aboutSubtitle.textContent = "stellarOS es un sistema operativo personalizado basado en un núcleo monolítico, diseñado desde cero para un rendimiento ultrarrápido, confiabilidad diaria y juegos de alto rendimiento.";
+            const andMoreEl = document.querySelector('.and-more');
+            if (andMoreEl) andMoreEl.textContent = "¡Y mucho más!";
 
-        // Feature Grids Map
-        const featureTranslations = {
-            "PERFORMANCE": ["RENDIMIENTO", "Rendimiento rápido en dispositivos de gama baja. Optimizado para preservar los recursos de hardware."],
-            "CREATIVITY": ["CREATIVIDAD", "Programas de primera mano enfocados en la creatividad, desarrollados de forma nativa para el sistema operativo."],
-            "DESIGN": ["DISEÑO", "Hermosos diseños de interfaz creados con precisión, ligeros en los hilos de procesamiento."],
-            "CONTROL": ["CONTROL", "Gran variedad de opciones de personalización profunda del sistema para construir tu espacio."],
-            "INTELLIGENCE": ["INTELIGENCIA", "Utilidades de Inteligencia Artificial basadas en la nube sin interrupciones usando Google Gemini 3.5 Flash."],
-            "SIMPLICITY": ["SIMPLICIDAD", "Flujo operativo intuitivo diseñado junto con un instalador rápido y sin complicaciones."]
-        };
+            const updatedEl = document.querySelector('.last-updated-banner');
+            if (updatedEl) updatedEl.textContent = "Última actualización: 11/7/2026";
 
-        document.querySelectorAll('.open-feature-item').forEach(item => {
-            const marker = item.querySelector('.item-marker');
-            const textEl = item.querySelector('.item-text');
-            if (marker && featureTranslations[marker.textContent.trim()]) {
-                const key = marker.textContent.trim();
-                marker.textContent = featureTranslations[key][0];
-                if (textEl) textEl.textContent = featureTranslations[key][1];
-            }
-        });
-
-        const andMoreEl = document.querySelector('.and-more');
-        if (andMoreEl) andMoreEl.textContent = "¡Y mucho más!";
-
-        const updatedEl = document.querySelector('.last-updated-banner');
-        if (updatedEl) updatedEl.textContent = "Última actualización: 11/7/2026";
-
-    } else {
-        // Phone is in English: Just cleanly substitute the old names for your new updated titles
-        if (betaTitleElement) betaTitleElement.textContent = "Beta Enrollment Program";
-        if (profileTitleElement) profileTitleElement.textContent = "stellarOS ID";
-        if (profileSetupTitleElement) profileSetupTitleElement.textContent = "Set Up Your stellarOS ID";
-    }
+        } else {
+            // English clean up
+            if (betaTitleElement) betaTitleElement.textContent = "Beta Enrollment Program";
+            if (profileTitleElement) profileTitleElement.textContent = "stellarOS ID";
+            if (profileSetupTitleElement) profileSetupTitleElement.textContent = "Set Up Your stellarOS ID";
+        }
+    });
 </script>
+
 
 
 </body>
