@@ -1572,8 +1572,7 @@
         }
     </script>
     
-    <script>
-    // Just add translations for whatever words you want to swap
+ <script>
     const dict = {
         "es": {
             "Home": "Inicio",
@@ -1592,12 +1591,19 @@
         }
     };
 
-    // Automatically detects user language (e.g., 'es', 'en')
     const userLang = navigator.language || navigator.userLanguage;
     const langKey = userLang.split('-')[0]; 
 
-    // Auto-translates the page if the language exists in our dictionary
     if (dict[langKey]) {
+        // 1. Force translate the navigation tabs specifically
+        document.querySelectorAll('.nav-link').forEach(link => {
+            const text = link.textContent.trim();
+            if (dict[langKey][text]) {
+                link.textContent = dict[langKey][text];
+            }
+        });
+
+        // 2. Scan the rest of the body for matching titles/text
         const translateText = (node) => {
             if (node.nodeType === Node.TEXT_NODE) {
                 const trimmed = node.textContent.trim();
@@ -1611,6 +1617,7 @@
         translateText(document.body);
     }
 </script>
+
 
 </body>
 </html>
