@@ -1572,51 +1572,48 @@
         }
     </script>
     
- <script>
-    const dict = {
-        "es": {
-            "Home": "Inicio",
-            "Downloads": "Descargas",
-            "Beta": "Beta",
-            "About": "Acerca de",
-            "Requirements": "Requisitos",
-            "Beta Program Portal": "Portal del Programa Beta"
-        },
-        "fr": {
-            "Home": "Accueil",
-            "Downloads": "Téléchargements",
-            "Beta": "Bêta",
-            "About": "À propos",
-            "Requirements": "Configuration"
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const userLang = (navigator.language || navigator.userLanguage).split('-')[0];
+        
+        // Only translate if the user's phone isn't set to English
+        if (userLang !== 'en') {
+            const script = document.createElement('script');
+            script.src = `https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit`;
+            document.head.appendChild(script);
+
+            window.googleTranslateElementInit = () => {
+                // Invisible container for the Google Translate engine
+                const el = document.createElement('div');
+                el.id = 'google_translate_element';
+                el.style.display = 'none';
+                document.body.appendChild(el);
+
+                new google.translate.TranslateElement({
+                    pageLanguage: 'en',
+                    includedLanguages: userLang,
+                    layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                    autoDisplay: false
+                }, 'google_translate_element');
+
+                // Trigger the auto-translate engine
+                setTimeout(() => {
+                    const combo = document.querySelector('.goog-te-combo');
+                    if (combo) {
+                        combo.value = userLang;
+                        combo.dispatchEvent(new Event('change'));
+                    }
+                }, 1000);
+            };
+
+            // Hide the ugly Google Translate top banner bar
+            const style = document.createElement('style');
+            style.innerHTML = '.skiptranslate, .goog-te-banner-frame { display: none !important; } body { top: 0 !important; }';
+            document.head.appendChild(style);
         }
-    };
-
-    const userLang = navigator.language || navigator.userLanguage;
-    const langKey = userLang.split('-')[0]; 
-
-    if (dict[langKey]) {
-        // 1. Force translate the navigation tabs specifically
-        document.querySelectorAll('.nav-link').forEach(link => {
-            const text = link.textContent.trim();
-            if (dict[langKey][text]) {
-                link.textContent = dict[langKey][text];
-            }
-        });
-
-        // 2. Scan the rest of the body for matching titles/text
-        const translateText = (node) => {
-            if (node.nodeType === Node.TEXT_NODE) {
-                const trimmed = node.textContent.trim();
-                if (dict[langKey][trimmed]) {
-                    node.textContent = node.textContent.replace(trimmed, dict[langKey][trimmed]);
-                }
-            } else {
-                node.childNodes.forEach(translateText);
-            }
-        };
-        translateText(document.body);
-    }
+    });
 </script>
+
 
 
 </body>
