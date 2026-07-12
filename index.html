@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>stellarOS</title>
-    <!-- Importing Poppins Light (300), Regular (400), and Medium (500) from Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
@@ -773,7 +772,6 @@
 
     <header id="navbar">
         <div class="logo-area">
-            <!-- Mini navbar avatar badge container with verified indicator badge, moved inside the Top-Left corner logo-area -->
             <div class="badge-wrapper">
                 <img src="" class="nav-profile-badge" id="nav-avatar" onclick="switchTab('beta')" alt="Profile">
                 <span class="nav-verified-indicator" id="nav-avatar-verified">
@@ -782,11 +780,9 @@
                     </svg>
                 </span>
             </div>
-            <!-- The OS name in exact case & custom silver/white styling -->
             <div class="logo" onclick="switchTab('home')">stellarOS</div>
         </div>
         
-        <!-- Requested navigation options -->
         <nav>
             <ul>
                 <li><a class="nav-link active" onclick="switchTab('home')">Home</a></li>
@@ -799,7 +795,6 @@
     </header>
 
     <main>
-        <!-- Home Section -->
         <section id="home" class="tab-content active">
             <div class="hero-placeholder">
                 <h2>Welcome to stellarOS</h2>
@@ -807,7 +802,6 @@
             </div>
         </section>
 
-        <!-- Downloads Section -->
         <section id="downloads" class="tab-content">
             <div class="hero-placeholder">
                 <h2>Downloads</h2>
@@ -815,7 +809,6 @@
             </div>
         </section>
 
-        <!-- Beta Section (With REAL Firebase Auth verification & Profile Customizer) -->
         <section id="beta" class="tab-content">
             <div class="about-open-content">
                 <h1>Beta Program Portal</h1>
@@ -823,7 +816,6 @@
                     Be among the first to experience early innovations in stellarOS. Test cutting-edge builds, provide feedback, and help us refine features as we build a faster, lighter desktop.
                 </p>
 
-                <!-- 1. SIGN IN SCREEN -->
                 <div id="auth-signin-view" class="beta-form-container" style="display: none;">
                     <form onsubmit="performSignIn(event)">
                         <div class="form-group">
@@ -847,7 +839,6 @@
                     </form>
                 </div>
 
-                <!-- 2. SIGN UP SCREEN -->
                 <div id="auth-signup-view" class="beta-form-container" style="display: none;">
                     <form onsubmit="performSignUp(event)">
                         <div class="form-group">
@@ -865,7 +856,6 @@
                     </form>
                 </div>
 
-                <!-- 3. EMAIL VERIFICATION SCREEN -->
                 <div id="auth-verify-view" class="beta-form-container" style="display: none;">
                     <h2 style="font-size: 20px; font-weight: 400; margin-bottom: 8px;">Verify Your Email Address</h2>
                     <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px;" id="verify-instructions">
@@ -875,14 +865,12 @@
                     <button onclick="resendVerificationLink()" class="btn-submit" style="background: transparent; color: var(--link-hover); border: 1px solid var(--link-hover)">Resend Email</button>
                 </div>
 
-                <!-- 4. PROFILE ONBOARDING SETTINGS (Username, Display Name, PFP) -->
                 <div id="auth-profile-setup-view" class="beta-form-container" style="display: none;">
                     <h2 style="font-size: 24px; font-weight: 300; margin-bottom: 8px;">Set Up Your stellarOS ID</h2>
                     <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px;" id="cooldown-helper-text">
                         Complete your beta program membership by setting up your unique handle, display name, and avatar picture.
                     </p>
                     <form onsubmit="performProfileUpdate(event)">
-                        <!-- Live avatar preview wrapper -->
                         <img src="" class="onboarding-avatar-preview" id="setup-avatar-preview" alt="Avatar Preview">
 
                         <div class="form-group">
@@ -896,7 +884,6 @@
                             <span class="cooldown-warning" id="username-cooldown-warning">Locked</span>
                         </div>
 
-                        <!-- Device Upload Section Only -->
                         <div style="margin-bottom: 24px;">
                             <label class="avatar-selection-title" style="display: block; margin-bottom: 8px;">Device Custom Picture</label>
                             <button type="button" class="btn-secondary" onclick="document.getElementById('pfp-upload-input').click()">📁 Select Photo from Device</button>
@@ -907,10 +894,8 @@
                     </form>
                 </div>
 
-                <!-- 5. REAL LOGGED IN / ENROLLED STATUS & PROFILE VIEW -->
                 <div id="auth-status-view" class="profile-container" style="display: none;">
                     
-                    <!-- Profile Card Badge -->
                     <div class="profile-card">
                         <img src="" class="profile-avatar-large" id="card-avatar" alt="User Avatar">
                         <div class="profile-display-name-row">
@@ -925,7 +910,6 @@
                         <div class="profile-meta-pill">Beta Tester</div>
                     </div>
 
-                    <!-- Profile Details -->
                     <div class="profile-details-area">
                         <h2 style="font-size: 26px; font-weight: 300; margin-top: 0; margin-bottom: 24px;">stellarOS Identity Account</h2>
                         
@@ -939,7 +923,6 @@
                         </div>
                         <div class="profile-row">
                             <span class="profile-row-label">Platform Verified</span>
-                            <!-- Clean inline SVG green check badge replaced the weird Unicode checkmark -->
                             <span class="profile-row-val" style="color: #10b981; display: inline-flex; align-items: center; gap: 4px;">
                                 Yes
                                 <svg style="width: 14px; height: 14px; fill: currentColor;" viewBox="0 0 24 24">
@@ -948,7 +931,6 @@
                             </span>
                         </div>
 
-                        <!-- Device Authenticator Passkey Block -->
                         <div class="profile-row" style="align-items: center;">
                             <span class="profile-row-label">Device Passkey</span>
                             <span class="profile-row-val">
@@ -966,7 +948,6 @@
             </div>
         </section>
 
-        <!-- About Section (Requested Content - Now completely open and card-less) -->
         <section id="about" class="tab-content">
             <div class="about-open-content">
                 <h1>What is stellarOS?</h1>
@@ -975,37 +956,31 @@
                 </p>
 
                 <div class="open-feature-grid">
-                    <!-- Feature Item 1 -->
                     <div class="open-feature-item">
                         <span class="item-marker">Performance</span>
                         <span class="item-text">Fast performance on low-end devices. Optimized to preserve hardware resources.</span>
                     </div>
 
-                    <!-- Feature Item 2 -->
                     <div class="open-feature-item">
                         <span class="item-marker">Creativity</span>
                         <span class="item-text">Creativity-focused first-party programs developed native to the OS.</span>
                     </div>
 
-                    <!-- Feature Item 3 -->
                     <div class="open-feature-item">
                         <span class="item-marker">Design</span>
                         <span class="item-text">Beautiful interface layouts crafted with precision, lightweight on processing threads.</span>
                     </div>
 
-                    <!-- Feature Item 4 -->
                     <div class="open-feature-item">
                         <span class="item-marker">Control</span>
                         <span class="item-text">Wide variety of deep system customization options to construct your space.</span>
                     </div>
 
-                    <!-- Feature Item 5 -->
                     <div class="open-feature-item">
                         <span class="item-marker">Intelligence</span>
                         <span class="item-text">Seamless cloud-based Artificial Intelligence utilities using Google Gemini 3.5 Flash.</span>
                     </div>
 
-                    <!-- Feature Item 6 -->
                     <div class="open-feature-item">
                         <span class="item-marker">Simplicity</span>
                         <span class="item-text">User-friendly operating flow built alongside a fast, painless installer.</span>
@@ -1020,7 +995,6 @@
             </div>
         </section>
 
-        <!-- Requirements Section -->
         <section id="requirements" class="tab-content">
             <div class="hero-placeholder">
                 <h2>System Requirements</h2>
@@ -1029,16 +1003,13 @@
         </section>
     </main>
 
-    <!-- Visual Popup Notification (Toast) -->
     <div id="toast" class="toast">
         <span id="toast-icon">📧</span>
         <span id="toast-message">Verification email successfully sent!</span>
     </div>
 
-    <!-- Hidden offscreen Canvas for instant local compression -->
     <canvas id="offscreen-compressor" style="display: none;"></canvas>
 
-    <!-- Firebase Script Load & App Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { 
@@ -1597,4 +1568,3 @@
     </script>
 </body>
 </html>
-
