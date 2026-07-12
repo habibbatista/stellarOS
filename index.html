@@ -1583,10 +1583,13 @@
             "About": "Acerca de",
             "Requirements": "Requisitos",
             
-            // Main Content Headers & Text
-            "Beta Program Portal": "Portal del Programa Beta",
-            "stellarOS Identity Account": "Cuenta de Identidad de stellarOS",
+            // Exact HTML text match -> Spanish Translation
+            "Beta Program Portal": "Programa de Inscripción Beta de stellarOS",
+            "stellarOS Identity Account": "ID de stellarOS",
             "What is stellarOS?": "¿Qué es stellarOS?",
+            
+            // Main Paragraph
+            "stellarOS is a custom-monolithic kernel-based Operating System designed from the ground up for lightning-fast performance, daily dependability, and high-performance gaming.": "stellarOS es un sistema operativo personalizado basado en un núcleo monolítico, diseñado desde cero para un rendimiento ultrarrápido, confiabilidad diaria y juegos de alto rendimiento.",
             
             // Features
             "PERFORMANCE": "RENDIMIENTO",
@@ -1602,18 +1605,26 @@
             "Wide variety of deep system customization options to construct your space.": "Gran variedad de opciones de personalización profunda del sistema para construir tu espacio.",
             
             "INTELLIGENCE": "INTELIGENCIA"
+        },
+        "en": {
+            // This forces the English version to update to your new cleaner names too!
+            "Beta Program Portal": "Beta Enrollment Program",
+            "stellarOS Identity Account": "stellarOS ID"
         }
     };
 
     const userLang = navigator.language || navigator.userLanguage;
     const langKey = userLang.split('-')[0]; 
 
-    if (dict[langKey]) {
+    // Run translation logic for Spanish OR English updates
+    if (dict[langKey] || dict['en']) {
+        const currentDict = dict[langKey] || dict['en'];
+
         // 1. Translate navigation tabs
         document.querySelectorAll('.nav-link').forEach(link => {
             const text = link.textContent.trim();
-            if (dict[langKey][text]) {
-                link.textContent = dict[langKey][text];
+            if (currentDict[text]) {
+                link.textContent = currentDict[text];
             }
         });
 
@@ -1621,8 +1632,8 @@
         const translateText = (node) => {
             if (node.nodeType === Node.TEXT_NODE) {
                 const trimmed = node.textContent.trim();
-                if (dict[langKey][trimmed]) {
-                    node.textContent = node.textContent.replace(trimmed, dict[langKey][trimmed]);
+                if (currentDict[trimmed]) {
+                    node.textContent = node.textContent.replace(trimmed, currentDict[trimmed]);
                 }
             } else {
                 node.childNodes.forEach(translateText);
@@ -1631,8 +1642,6 @@
         translateText(document.body);
     }
 </script>
-
-
 
 </body>
 </html>
