@@ -730,7 +730,8 @@
                 gap: 12px;
                 padding: 16px 20px;
                 text-align: center;
-                height: auto; /* Allow flexible wrap on mobile layout */
+                height: auto; 
+                align-items: center; /* This centers everything on mobile splits */
             }
 
             nav {
@@ -772,14 +773,6 @@
 
     <header id="navbar">
         <div class="logo-area">
-            <div class="badge-wrapper">
-                <img src="" class="nav-profile-badge" id="nav-avatar" onclick="switchTab('beta')" alt="Profile">
-                <span class="nav-verified-indicator" id="nav-avatar-verified">
-                    <svg viewBox="0 0 24 24">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                </span>
-            </div>
             <div class="logo" onclick="switchTab('home')">stellarOS</div>
         </div>
         
@@ -791,8 +784,17 @@
                 <li><a class="nav-link" onclick="switchTab('about')">About</a></li>
                 <li><a class="nav-link" onclick="switchTab('requirements')">Requirements</a></li>
             </ul>
+            <div class="badge-wrapper" style="margin-left: 24px;">
+                <img src="" class="nav-profile-badge" id="nav-avatar" onclick="switchTab('beta')" alt="Profile">
+                <span class="nav-verified-indicator" id="nav-avatar-verified">
+                    <svg viewBox="0 0 24 24">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </span>
+            </div>
         </nav>
     </header>
+
 
     <main>
         <section id="home" class="tab-content active">
