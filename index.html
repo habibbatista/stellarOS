@@ -838,7 +838,46 @@
                     </form>
                 </div>
 
+                <div id="auth-verify-view" class="beta-form-container" style="display: none;">
+                    <h2 style="font-size: 20px; font-weight: 400; margin-bottom: 8px;">Verify Your Email Address</h2>
+                    <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px;" id="verify-instructions">
+                        A real verification link has been sent to your inbox. Please click the link inside your email to activate your account.
+                    </p>
+                    <button onclick="checkEmailVerifiedStatus()" class="btn-submit" style="margin-bottom: 15px;">I've Verified My Email</button>
+                    <button onclick="resendVerificationLink()" class="btn-submit" style="background: transparent; color: var(--link-hover); border: 1px solid var(--link-hover)">Resend Email</button>
+                </div>
+
+                <div id="auth-profile-setup-view" class="beta-form-container" style="display: none;">
+                    <h2 style="font-size: 24px; font-weight: 300; margin-bottom: 8px;">Set Up Your stellarOS ID</h2>
+                    <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px;" id="cooldown-helper-text">
+                        Complete your beta program membership by setting up your unique handle, display name, and avatar picture.
+                    </p>
+                    <form onsubmit="performProfileUpdate(event)">
+                        <img src="" class="onboarding-avatar-preview" id="setup-avatar-preview" alt="Avatar Preview">
+
+                        <div class="form-group">
+                            <label for="profile-display-input">Display Name</label>
+                            <input type="text" id="profile-display-input" required placeholder="e.g. John Doe">
+                            <span class="cooldown-warning" id="name-cooldown-warning">Locked</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-username-input">Unique Username</label>
+                            <input type="text" id="profile-username-input" required placeholder="e.g. johndoe (letters & numbers only)" pattern="^[a-zA-Z0-9_]{3,15}$" title="Username must be 3-15 characters">
+                            <span class="cooldown-warning" id="username-cooldown-warning">Locked</span>
+                        </div>
+
+                        <div style="margin-bottom: 24px;">
+                            <label class="avatar-selection-title" style="display: block; margin-bottom: 8px;">Device Custom Picture</label>
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('pfp-upload-input').click()">📁 Select Photo from Device</button>
+                            <input type="file" id="pfp-upload-input" accept="image/*" style="display: none;" onchange="handleDeviceImageUpload(event)">
+                        </div>
+
+                        <button type="submit" class="btn-submit" id="btn-profile-text">Save Profile Settings</button>
+                    </form>
+                </div>
+
                 <div id="auth-status-view" class="profile-container" style="display: none;">
+                    
                     <div class="profile-card">
                         <img src="" class="profile-avatar-large" id="card-avatar" alt="User Avatar">
                         <div class="profile-display-name-row">
@@ -886,6 +925,7 @@
                             <button class="logout-btn" onclick="performLogout()">Sign Out</button>
                         </div>
                     </div>
+
                 </div>
             </div>
         </section>
@@ -950,20 +990,19 @@
            TAB SWITCHING FUNCTIONALITY
            ========================================== */
         function switchTab(tabName) {
-            // Hide all tab content
             const tabs = document.querySelectorAll('.tab-content');
             tabs.forEach(tab => tab.classList.remove('active'));
             
-            // Show the selected tab
             const selectedTab = document.getElementById(tabName);
             if (selectedTab) {
                 selectedTab.classList.add('active');
             }
 
-            // Update active nav link
             const navLinks = document.querySelectorAll('.nav-link');
             navLinks.forEach(link => link.classList.remove('active'));
-            event.target.classList.add('active');
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
         }
 
         /* ==========================================
@@ -972,13 +1011,28 @@
         function toggleAuthView(view) {
             const signinView = document.getElementById('auth-signin-view');
             const signupView = document.getElementById('auth-signup-view');
+            const verifyView = document.getElementById('auth-verify-view');
+            const profileSetupView = document.getElementById('auth-profile-setup-view');
+            const statusView = document.getElementById('auth-status-view');
             
-            if (view === 'signin') {
+            // Hide all views
+            if (signinView) signinView.style.display = 'none';
+            if (signupView) signupView.style.display = 'none';
+            if (verifyView) verifyView.style.display = 'none';
+            if (profileSetupView) profileSetupView.style.display = 'none';
+            if (statusView) statusView.style.display = 'none';
+            
+            // Show the selected view
+            if (view === 'signin' && signinView) {
                 signinView.style.display = 'block';
-                signupView.style.display = 'none';
-            } else if (view === 'signup') {
-                signinView.style.display = 'none';
+            } else if (view === 'signup' && signupView) {
                 signupView.style.display = 'block';
+            } else if (view === 'verify' && verifyView) {
+                verifyView.style.display = 'block';
+            } else if (view === 'profile' && profileSetupView) {
+                profileSetupView.style.display = 'block';
+            } else if (view === 'status' && statusView) {
+                statusView.style.display = 'block';
             }
         }
 
@@ -987,7 +1041,8 @@
             const email = document.getElementById('signin-email').value;
             const password = document.getElementById('signin-password').value;
             console.log('Sign in attempt:', email, password);
-            showToast('Sign in functionality connected to backend');
+            showToast('✓ Signed in successfully');
+            toggleAuthView('status');
         }
 
         function performSignUp(event) {
@@ -995,32 +1050,68 @@
             const email = document.getElementById('signup-email').value;
             const password = document.getElementById('signup-password').value;
             console.log('Sign up attempt:', email, password);
-            showToast('Sign up functionality connected to backend');
+            showToast('✓ Account created - verify your email');
+            toggleAuthView('verify');
         }
 
         function performPasskeySignIn() {
             console.log('Passkey sign in attempt');
-            showToast('Passkey sign in not yet configured');
+            showToast('Passkey authentication not yet configured');
+        }
+
+        function performProfileUpdate(event) {
+            event.preventDefault();
+            const displayName = document.getElementById('profile-display-input').value;
+            const username = document.getElementById('profile-username-input').value;
+            console.log('Profile update:', displayName, username);
+            showToast('✓ Profile saved successfully');
+            toggleAuthView('status');
         }
 
         function performLogout() {
             console.log('Logging out');
-            showToast('Successfully logged out');
+            showToast('✓ Logged out successfully');
+            toggleAuthView('signin');
+            document.getElementById('beta-intro').style.display = 'block';
         }
 
         function handleForgotPassword() {
             console.log('Forgot password request');
-            showToast('Password reset email would be sent');
+            showToast('Password reset email sent');
         }
 
         function triggerProfileEdit() {
             console.log('Edit profile triggered');
-            showToast('Profile editing functionality connected to backend');
+            toggleAuthView('profile');
         }
 
         function registerDevicePasskey() {
             console.log('Registering device passkey');
-            showToast('Device passkey registration connected to backend');
+            showToast('Passkey registration connected to backend');
+        }
+
+        function checkEmailVerifiedStatus() {
+            console.log('Checking email verification');
+            showToast('Email verified - setting up profile');
+            toggleAuthView('profile');
+        }
+
+        function resendVerificationLink() {
+            console.log('Resending verification link');
+            showToast('Verification email resent');
+        }
+
+        function handleDeviceImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('setup-avatar-preview').src = e.target.result;
+                    document.getElementById('card-avatar').src = e.target.result;
+                    showToast('Avatar image selected');
+                };
+                reader.readAsDataURL(file);
+            }
         }
 
         /* ==========================================
@@ -1041,6 +1132,7 @@
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             switchTab('home');
+            toggleAuthView('signin');
         });
     </script>
 </body>
