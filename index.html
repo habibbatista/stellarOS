@@ -1574,74 +1574,74 @@
     
 
 <script>
-    const dict = {
-        "es": {
-            // Navigation Tabs
-            "Home": "Inicio",
-            "Downloads": "Descargas",
-            "Beta": "Beta",
-            "About": "Acerca de",
-            "Requirements": "Requisitos",
-            
-            // Exact HTML text match -> Spanish Translation
-            "Beta Program Portal": "Programa de Inscripción Beta de stellarOS",
-            "stellarOS Identity Account": "ID de stellarOS",
-            "What is stellarOS?": "¿Qué es stellarOS?",
-            
-            // Main Paragraph
-            "stellarOS is a custom-monolithic kernel-based Operating System designed from the ground up for lightning-fast performance, daily dependability, and high-performance gaming.": "stellarOS es un sistema operativo personalizado basado en un núcleo monolítico, diseñado desde cero para un rendimiento ultrarrápido, confiabilidad diaria y juegos de alto rendimiento.",
-            
-            // Features
-            "PERFORMANCE": "RENDIMIENTO",
-            "Fast performance on low-end devices. Optimized to preserve hardware resources.": "Rendimiento rápido en dispositivos de gama baja. Optimizado para preservar los recursos de hardware.",
-            
-            "CREATIVITY": "CREATIVIDAD",
-            "Creativity-focused first-party programs developed native to the OS.": "Programas de primera mano enfocados en la creatividad, desarrollados de forma nativa para el sistema operativo.",
-            
-            "DESIGN": "DISEÑO",
-            "Beautiful interface layouts crafted with precision, lightweight on processing threads.": "Hermosos diseños de interfaz creados con precisión, ligeros en los hilos de procesamiento.",
-            
-            "CONTROL": "CONTROL",
-            "Wide variety of deep system customization options to construct your space.": "Gran variedad de opciones de personalización profunda del sistema para construir tu espacio.",
-            
-            "INTELLIGENCE": "INTELIGENCIA"
-        },
-        "en": {
-            // This forces the English version to update to your new cleaner names too!
-            "Beta Program Portal": "Beta Enrollment Program",
-            "stellarOS Identity Account": "stellarOS ID"
-        }
-    };
-
     const userLang = navigator.language || navigator.userLanguage;
     const langKey = userLang.split('-')[0]; 
 
-    // Run translation logic for Spanish OR English updates
-    if (dict[langKey] || dict['en']) {
-        const currentDict = dict[langKey] || dict['en'];
+    // 1. Force the title changes across both English and Spanish views immediately
+    const betaTitleElement = document.querySelector('#beta h1');
+    const profileTitleElement = document.querySelector('.profile-details-area h2');
+    const profileSetupTitleElement = document.querySelector('#auth-profile-setup-view h2');
 
-        // 1. Translate navigation tabs
+    if (langKey === 'es') {
+        // Apply full Spanish dictionary translations directly to elements
+        if (betaTitleElement) betaTitleElement.textContent = "Programa de Inscripción Beta de stellarOS";
+        if (profileTitleElement) profileTitleElement.textContent = "ID de stellarOS";
+        if (profileSetupTitleElement) profileSetupTitleElement.textContent = "Configura tu ID de stellarOS";
+
+        // Navigation Tabs Translation
         document.querySelectorAll('.nav-link').forEach(link => {
+            const tabs = {
+                "Home": "Inicio",
+                "Downloads": "Descargas",
+                "Beta": "Beta",
+                "About": "Acerca de",
+                "Requirements": "Requisitos"
+            };
             const text = link.textContent.trim();
-            if (currentDict[text]) {
-                link.textContent = currentDict[text];
+            if (tabs[text]) link.textContent = tabs[text];
+        });
+
+        // About Tab Main Content Headers & Paragraphs
+        const aboutHeader = document.querySelector('#about h1');
+        if (aboutHeader) aboutHeader.textContent = "¿Qué es stellarOS?";
+
+        const aboutSubtitle = document.querySelector('#about p.subtitle');
+        if (aboutSubtitle) aboutSubtitle.textContent = "stellarOS es un sistema operativo personalizado basado en un núcleo monolítico, diseñado desde cero para un rendimiento ultrarrápido, confiabilidad diaria y juegos de alto rendimiento.";
+
+        // Feature Grids Map
+        const featureTranslations = {
+            "PERFORMANCE": ["RENDIMIENTO", "Rendimiento rápido en dispositivos de gama baja. Optimizado para preservar los recursos de hardware."],
+            "CREATIVITY": ["CREATIVIDAD", "Programas de primera mano enfocados en la creatividad, desarrollados de forma nativa para el sistema operativo."],
+            "DESIGN": ["DISEÑO", "Hermosos diseños de interfaz creados con precisión, ligeros en los hilos de procesamiento."],
+            "CONTROL": ["CONTROL", "Gran variedad de opciones de personalización profunda del sistema para construir tu espacio."],
+            "INTELLIGENCE": ["INTELIGENCIA", "Utilidades de Inteligencia Artificial basadas en la nube sin interrupciones usando Google Gemini 3.5 Flash."],
+            "SIMPLICITY": ["SIMPLICIDAD", "Flujo operativo intuitivo diseñado junto con un instalador rápido y sin complicaciones."]
+        };
+
+        document.querySelectorAll('.open-feature-item').forEach(item => {
+            const marker = item.querySelector('.item-marker');
+            const textEl = item.querySelector('.item-text');
+            if (marker && featureTranslations[marker.textContent.trim()]) {
+                const key = marker.textContent.trim();
+                marker.textContent = featureTranslations[key][0];
+                if (textEl) textEl.textContent = featureTranslations[key][1];
             }
         });
 
-        // 2. Translate body text chunks
-        const translateText = (node) => {
-            if (node.nodeType === Node.TEXT_NODE) {
-                const trimmed = node.textContent.trim();
-                if (currentDict[trimmed]) {
-                    node.textContent = node.textContent.replace(trimmed, currentDict[trimmed]);
-                }
-            } else {
-                node.childNodes.forEach(translateText);
-            }
-        };
-        translateText(document.body);
+        const andMoreEl = document.querySelector('.and-more');
+        if (andMoreEl) andMoreEl.textContent = "¡Y mucho más!";
+
+        const updatedEl = document.querySelector('.last-updated-banner');
+        if (updatedEl) updatedEl.textContent = "Última actualización: 11/7/2026";
+
+    } else {
+        // Phone is in English: Just cleanly substitute the old names for your new updated titles
+        if (betaTitleElement) betaTitleElement.textContent = "Beta Enrollment Program";
+        if (profileTitleElement) profileTitleElement.textContent = "stellarOS ID";
+        if (profileSetupTitleElement) profileSetupTitleElement.textContent = "Set Up Your stellarOS ID";
     }
 </script>
+
 
 </body>
 </html>
