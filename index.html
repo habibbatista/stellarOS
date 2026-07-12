@@ -1572,46 +1572,64 @@
         }
     </script>
     
+
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const userLang = (navigator.language || navigator.userLanguage).split('-')[0];
-        
-        // Only translate if the user's phone isn't set to English
-        if (userLang !== 'en') {
-            const script = document.createElement('script');
-            script.src = `https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit`;
-            document.head.appendChild(script);
-
-            window.googleTranslateElementInit = () => {
-                // Invisible container for the Google Translate engine
-                const el = document.createElement('div');
-                el.id = 'google_translate_element';
-                el.style.display = 'none';
-                document.body.appendChild(el);
-
-                new google.translate.TranslateElement({
-                    pageLanguage: 'en',
-                    includedLanguages: userLang,
-                    layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
-                    autoDisplay: false
-                }, 'google_translate_element');
-
-                // Trigger the auto-translate engine
-                setTimeout(() => {
-                    const combo = document.querySelector('.goog-te-combo');
-                    if (combo) {
-                        combo.value = userLang;
-                        combo.dispatchEvent(new Event('change'));
-                    }
-                }, 1000);
-            };
-
-            // Hide the ugly Google Translate top banner bar
-            const style = document.createElement('style');
-            style.innerHTML = '.skiptranslate, .goog-te-banner-frame { display: none !important; } body { top: 0 !important; }';
-            document.head.appendChild(style);
+    const dict = {
+        "es": {
+            // Navigation Tabs
+            "Home": "Inicio",
+            "Downloads": "Descargas",
+            "Beta": "Beta",
+            "About": "Acerca de",
+            "Requirements": "Requisitos",
+            
+            // Main Content Headers & Text
+            "Beta Program Portal": "Portal del Programa Beta",
+            "stellarOS Identity Account": "Cuenta de Identidad de stellarOS",
+            "What is stellarOS?": "¿Qué es stellarOS?",
+            
+            // Features
+            "PERFORMANCE": "RENDIMIENTO",
+            "Fast performance on low-end devices. Optimized to preserve hardware resources.": "Rendimiento rápido en dispositivos de gama baja. Optimizado para preservar los recursos de hardware.",
+            
+            "CREATIVITY": "CREATIVIDAD",
+            "Creativity-focused first-party programs developed native to the OS.": "Programas de primera mano enfocados en la creatividad, desarrollados de forma nativa para el sistema operativo.",
+            
+            "DESIGN": "DISEÑO",
+            "Beautiful interface layouts crafted with precision, lightweight on processing threads.": "Hermosos diseños de interfaz creados con precisión, ligeros en los hilos de procesamiento.",
+            
+            "CONTROL": "CONTROL",
+            "Wide variety of deep system customization options to construct your space.": "Gran variedad de opciones de personalización profunda del sistema para construir tu espacio.",
+            
+            "INTELLIGENCE": "INTELIGENCIA"
         }
-    });
+    };
+
+    const userLang = navigator.language || navigator.userLanguage;
+    const langKey = userLang.split('-')[0]; 
+
+    if (dict[langKey]) {
+        // 1. Translate navigation tabs
+        document.querySelectorAll('.nav-link').forEach(link => {
+            const text = link.textContent.trim();
+            if (dict[langKey][text]) {
+                link.textContent = dict[langKey][text];
+            }
+        });
+
+        // 2. Translate body text chunks
+        const translateText = (node) => {
+            if (node.nodeType === Node.TEXT_NODE) {
+                const trimmed = node.textContent.trim();
+                if (dict[langKey][trimmed]) {
+                    node.textContent = node.textContent.replace(trimmed, dict[langKey][trimmed]);
+                }
+            } else {
+                node.childNodes.forEach(translateText);
+            }
+        };
+        translateText(document.body);
+    }
 </script>
 
 
