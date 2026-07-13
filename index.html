@@ -1585,13 +1585,17 @@
         const profileSetupTitleElement = document.querySelector('#auth-profile-setup-view h2');
 
         if (langKey === 'es') {
-            // 1. Titles & Introductions
+            // 1. Core Titles & Beta Views
             if (betaTitleElement) betaTitleElement.textContent = "Programa de Inscripción Beta de stellarOS";
             if (betaSubtitle) betaSubtitle.textContent = "Sé de los primeros en experimentar las primeras innovaciones en stellarOS. Prueba compilaciones de vanguardia, comparte tus comentarios y ayúdanos a perfeccionar las funciones mientras construimos un escritorio más rápido y ligero.";
             if (profileTitleElement) profileTitleElement.textContent = "ID de stellarOS";
             if (profileSetupTitleElement) profileSetupTitleElement.textContent = "Configura tu ID de stellarOS";
 
-            // 2. Navigation Tabs
+            // Helper functions for easy translating
+            const setTxt = (selector, text) => { const el = document.querySelector(selector); if(el) el.textContent = text; };
+            const setPlch = (selector, text) => { const el = document.querySelector(selector); if(el) el.placeholder = text; };
+
+            // 2. Navigation Tabs (Ensures all sync correctly)
             document.querySelectorAll('.nav-link').forEach(link => {
                 const tabs = {
                     "Home": "Inicio",
@@ -1604,69 +1608,65 @@
                 if (tabs[text]) link.textContent = tabs[text];
             });
 
-            // 3. Sign In / Sign Up Forms & Onboarding Text
-            const setTxt = (selector, text) => { const el = document.querySelector(selector); if(el) el.textContent = text; };
-            const setPlch = (selector, text) => { const el = document.querySelector(selector); if(el) el.placeholder = text; };
+            // 3. Home View Translation (Image 3)
+            // Finds the main "Welcome" text block dynamically based on text content
+            document.querySelectorAll('h1, h2, h3, p').forEach(el => {
+                const txt = el.textContent.trim();
+                if (txt === "Welcome to stellarOS") el.textContent = "Bienvenido a stellarOS";
+                if (txt === "Designed for performance, built for simplicity.") el.textContent = "Diseñado para el rendimiento, creado para la simplicidad.";
+                if (txt === "Official public releases and boot images will be available here soon.") el.textContent = "Las versiones públicas oficiales y las imágenes de arranque estarán disponibles aquí pronto.";
+                if (txt === "System Requirements") el.textContent = "Requisitos del Sistema";
+                if (txt === "Hardware and architecture details will be listed soon.") el.textContent = "Los detalles de hardware y arquitectura se enumerarán pronto.";
+            });
 
-            // Sign In View
-            setTxt('label[for="signin-email"]', "Correo Electrónico");
-            setPlch('#signin-email', "nombre@dominio.com");
-            setTxt('label[for="signin-password"]', "Contraseña");
-            setTxt('.forgot-password-link', "¿Olvidaste tu contraseña?");
-            setTxt('#btn-signin-text', "Iniciar Sesión");
-            setTxt('.btn-secondary[onclick*="Passkey"]', "🔑 Iniciar sesión con Passkey");
-            
-            const authSwitchSignin = document.querySelector('#auth-signin-view .auth-switch');
-            if (authSwitchSignin) authSwitchSignin.innerHTML = '¿No tienes una cuenta? <span onclick="toggleAuthView(\'signup\')">Regístrate</span>';
+            // 4. Downloads View Title (Image 4)
+            const downloadsHeader = document.querySelector('#downloads h1, .downloads-section h1');
+            if (downloadsHeader && downloadsHeader.textContent.trim() === "Downloads") {
+                downloadsHeader.textContent = "Descargas";
+            }
 
-            // Sign Up View
-            setTxt('label[for="signup-email"]', "Correo Electrónico");
-            setPlch('#signup-email', "nombre@dominio.com");
-            setTxt('label[for="signup-password"]', "Contraseña");
-            setPlch('#signup-password', "Mínimo 6 caracteres");
-            setTxt('#btn-signup-text', "Crear Cuenta");
-            
-            const authSwitchSignup = document.querySelector('#auth-signup-view .auth-switch');
-            if (authSwitchSignup) authSwitchSignup.innerHTML = '¿Ya tienes una cuenta? <span onclick="toggleAuthView(\'signin\')">Inicia Sesión</span>';
+            // 5. Requirements View Title (Image 7)
+            const reqHeader = document.querySelector('#requirements h1, .requirements-section h1');
+            if (reqHeader && reqHeader.textContent.trim() === "System Requirements") {
+                reqHeader.textContent = "Requisitos del Sistema";
+            }
 
-            // Verify Email View
-            setTxt('#auth-verify-view h2', "Verifica tu Dirección de Correo");
-            setTxt('#verify-instructions', "Se ha enviado un enlace de verificación real a tu bandeja de entrada. Haz clic en el enlace dentro de tu correo para activar tu cuenta.");
-            setTxt('#auth-verify-view .btn-submit:nth-of-type(1)', "Ya he verificado mi correo");
-            setTxt('#auth-verify-view .btn-submit:nth-of-type(2)', "Reenviar correo");
+            // 6. Profile Dashboard Details card (Image 2)
+            document.querySelectorAll('.profile-row-label').forEach(el => {
+                const txt = el.textContent.trim();
+                if (txt === "Associated Email") el.textContent = "Correo Asociado";
+                if (txt === "Membership Tier") el.textContent = "Nivel de Membresía";
+                if (txt === "Platform Verified") el.textContent = "Plataforma Verificada";
+                if (txt === "Device Passkey") el.textContent = "Passkey del Dispositivo";
+            });
 
-            // Profile Setup Onboarding View
-            setTxt('#cooldown-helper-text', "Completa tu membresía del programa beta configurando tu nombre de usuario único, nombre visible y foto de perfil.");
-            setTxt('label[for="profile-display-input"]', "Nombre Visible");
-            setPlch('#profile-display-input', "ej. Juan Pérez");
-            setTxt('label[for="profile-username-input"]', "Nombre de Usuario Único");
-            setPlch('#profile-username-input', "ej. juanperez (letras y números solamente)");
-            setTxt('.avatar-selection-title', "Foto Personalizada del Dispositivo");
-            setTxt('.btn-secondary[onclick*="pfp-upload"]', "📁 Seleccionar foto desde el dispositivo");
-            setTxt('#btn-profile-text', "Guardar Ajustes de Perfil");
+            // Profile Values & Badges
+            document.querySelectorAll('.profile-meta-pill, .profile-badge').forEach(el => {
+                if (el.textContent.trim() === "BETA TESTER") el.textContent = "PROBADOR BETA";
+            });
+            document.querySelectorAll('.profile-row-val').forEach(el => {
+                if (el.textContent.trim() === "Core Developer / Tester") el.textContent = "Desarrollador Núcleo / Probador";
+                if (el.textContent.includes("Yes")) {
+                    el.innerHTML = 'Sí <svg style="width: 14px; height: 14px; fill: #10b981; display: inline-block; vertical-align: middle; margin-left: 4px;" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>';
+                }
+            });
 
-            // Profile Dashboard / Status Card
-            setTxt('.profile-meta-pill', "Probador Beta");
-            setTxt('.profile-row:nth-of-type(1) .profile-row-label', "Correo Asociado");
-            setTxt('.profile-row:nth-of-type(2) .profile-row-label', "Nivel de Membresía");
-            setTxt('.profile-row:nth-of-type(2) .profile-row-val', "Desarrollador Núcleo / Probador");
-            setTxt('.profile-row:nth-of-type(3) .profile-row-label', "Plataforma Verificada");
-            
-            const verifiedVal = document.querySelector('.profile-row:nth-of-type(3) .profile-row-val');
-            if (verifiedVal) verifiedVal.innerHTML = 'Sí <svg style="width: 14px; height: 14px; fill: currentColor;" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>';
-            
-            setTxt('.profile-row:nth-of-type(4) .profile-row-label', "Passkey del Dispositivo");
-            setTxt('.btn-secondary[onclick*="registerDevicePasskey"]', "🔑 Configurar Desbloqueo Biométrico");
+            // Buttons
+            setTxt('.logout-btn, .btn-signout', "Cerrar Sesión");
             setTxt('.edit-profile-btn', "Editar Perfil");
-            setTxt('.logout-btn', "Cerrar Sesión");
+            const passkeyBtn = document.querySelector('[onclick*="Passkey"], .passkey-btn');
+            if (passkeyBtn && passkeyBtn.textContent.includes("Setup Biometric Unlock")) {
+                passkeyBtn.innerHTML = "🔑 Configurar Desbloqueo Biométrico";
+            }
 
-            // 4. About Tab Content
+            // 7. About Tab Content & Features Grid Fixes (Images 1, 5, 6)
             const aboutHeader = document.querySelector('#about h1');
             if (aboutHeader) aboutHeader.textContent = "¿Qué es stellarOS?";
 
-            const aboutSubtitleSection = document.querySelector('#about p.subtitle');
+            const aboutSubtitleSection = document.querySelector('#about p.subtitle, #about .subtitle');
             if (aboutSubtitleSection) aboutSubtitleSection.textContent = "stellarOS es un sistema operativo personalizado basado en un núcleo monolítico, diseñado desde cero para un rendimiento ultrarrápido, confiabilidad diaria y juegos de alto rendimiento.";
 
+            // Expanded map to fully translate feature containers cleanly
             const featureTranslations = {
                 "PERFORMANCE": ["RENDIMIENTO", "Rendimiento rápido en dispositivos de gama baja. Optimizado para preservar los recursos de hardware."],
                 "CREATIVITY": ["CREATIVIDAD", "Programas de primera mano enfocados en la creatividad, desarrollados de forma nativa para el sistema operativo."],
@@ -1676,9 +1676,9 @@
                 "SIMPLICITY": ["SIMPLICIDAD", "Flujo operativo intuitivo diseñado junto con un instalador rápido y sin complicaciones."]
             };
 
-            document.querySelectorAll('.open-feature-item').forEach(item => {
-                const marker = item.querySelector('.item-marker');
-                const textEl = item.querySelector('.item-text');
+            document.querySelectorAll('.open-feature-item, .feature-item, [class*="feature"]').forEach(item => {
+                const marker = item.querySelector('.item-marker, h3, .feature-title');
+                const textEl = item.querySelector('.item-text, p, .feature-desc');
                 if (marker && featureTranslations[marker.textContent.trim()]) {
                     const key = marker.textContent.trim();
                     marker.textContent = featureTranslations[key][0];
@@ -1686,20 +1686,42 @@
                 }
             });
 
-            const andMoreEl = document.querySelector('.and-more');
-            if (andMoreEl) andMoreEl.textContent = "¡Y mucho más!";
+            // Footer / Banners
+            document.querySelectorAll('.and-more, .about-footer h2').forEach(el => {
+                if (el.textContent.trim() === "And much more!") el.textContent = "¡Y mucho más!";
+            });
+            document.querySelectorAll('.last-updated-banner, .update-ts').forEach(el => {
+                if (el.textContent.includes("Last updated")) el.textContent = "Última actualización: 11/7/2026";
+            });
 
-            const updatedEl = document.querySelector('.last-updated-banner');
-            if (updatedEl) updatedEl.textContent = "Última actualización: 11/7/2026";
+            // 8. Sign In / Sign Up Input Forms
+            setTxt('label[for="signin-email"]', "Correo Electrónico");
+            setPlch('#signin-email', "nombre@dominio.com");
+            setTxt('label[for="signin-password"]', "Contraseña");
+            setTxt('.forgot-password-link', "¿Olvidaste tu contraseña?");
+            setTxt('#btn-signin-text', "Iniciar Sesión");
+            
+            const authSwitchSignin = document.querySelector('#auth-signin-view .auth-switch');
+            if (authSwitchSignin) authSwitchSignin.innerHTML = '¿No tienes una cuenta? <span onclick="toggleAuthView(\'signup\')">Regístrate</span>';
+
+            setTxt('label[for="signup-email"]', "Correo Electrónico");
+            setPlch('#signup-email', "nombre@dominio.com");
+            setTxt('label[for="signup-password"]', "Contraseña");
+            setPlch('#signup-password', "Mínimo 6 caracteres");
+            setTxt('#btn-signup-text', "Crear Cuenta");
+            
+            const authSwitchSignup = document.querySelector('#auth-signup-view .auth-switch');
+            if (authSwitchSignup) authSwitchSignup.innerHTML = '¿Ya tienes una cuenta? <span onclick="toggleAuthView(\'signin\')">Inicia Sesión</span>';
 
         } else {
-            // English View cleanup configurations
+            // English Cleanup Fallback
             if (betaTitleElement) betaTitleElement.textContent = "Beta Enrollment Program";
             if (profileTitleElement) profileTitleElement.textContent = "stellarOS ID";
             if (profileSetupTitleElement) profileSetupTitleElement.textContent = "Set Up Your stellarOS ID";
         }
     });
 </script>
+
 
 </body>
 </html>
