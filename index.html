@@ -6,7 +6,8 @@
     <title>stellarOS</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Included Borel font -->
+    <link href="https://fonts.googleapis.com/css2?family=Borel&family=Poppins:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <style>
         /* ==========================================
@@ -381,6 +382,15 @@
             font-weight: 300;
             margin-bottom: 14px;
             letter-spacing: -0.8px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Borel font styling for the Welcome text */
+        .welcome-borel {
+            font-family: 'Borel', cursive;
+            font-weight: 400;
+            margin-right: 6px;
+            font-size: 0.95em;
         }
 
         .hero-placeholder p {
@@ -766,9 +776,7 @@
             outline-offset: 2px;
         }
 
-        /* ==========================================
-           REFINED MOBILE LAYOUT FIXES
-           ========================================== */
+        /* Mobile Adjustments */
         @media (max-width: 768px) {
             header {
                 flex-direction: column;
@@ -788,13 +796,11 @@
                 width: 100%;
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
-                scrollbar-width: none; /* Hide scrollbars */
+                scrollbar-width: none;
                 padding-bottom: 2px;
             }
 
-            nav::-webkit-scrollbar {
-                display: none;
-            }
+            nav::-webkit-scrollbar { display: none; }
 
             nav ul {
                 display: flex;
@@ -803,14 +809,8 @@
                 gap: 6px;
             }
 
-            nav a {
-                font-size: 12.5px;
-                padding: 5px 10px;
-            }
-
-            nav a.active {
-                padding: 5px 12px;
-            }
+            nav a { font-size: 12.5px; padding: 5px 10px; }
+            nav a.active { padding: 5px 12px; }
 
             .about-open-content h1 { font-size: 26px; }
             .about-open-content p.subtitle { font-size: 14.5px; margin-bottom: 24px; }
@@ -863,7 +863,7 @@
         <section id="home" class="tab-content active">
             <div class="hero-placeholder">
                 <span class="eyebrow mono">stellarOS · kernel: nevora</span>
-                <h2 id="home-greeting">Welcome, Habib</h2>
+                <h2 id="home-greeting"><span class="welcome-borel">Welcome,</span><span id="greeting-username">Habib</span></h2>
                 <p>Designed for performance, built for simplicity.</p>
             </div>
         </section>
@@ -1168,7 +1168,7 @@
         function handleUserStateChange(user) {
             const navAvatar = document.getElementById('nav-avatar');
             const navVerifiedBadge = document.getElementById('nav-avatar-verified');
-            const greeting = document.getElementById('home-greeting');
+            const greetingUsername = document.getElementById('greeting-username');
 
             if (user) {
                 const resolvedAvatar = getResolvedAvatarUrl(user);
@@ -1186,7 +1186,7 @@
                             username = parts[1];
                         }
 
-                        if (greeting) greeting.innerText = `Welcome, ${displayName}`;
+                        if (greetingUsername) greetingUsername.innerText = displayName;
 
                         const isHabib = username.toLowerCase() === 'habib';
                         const verifiedBadge = document.getElementById('card-verified-badge');
@@ -1215,7 +1215,7 @@
                 }
             } else {
                 showView('auth-signup-view');
-                if (greeting) greeting.innerText = "Welcome, Habib";
+                if (greetingUsername) greetingUsername.innerText = "Habib";
                 navAvatar.src = DEFAULT_SILHOUETTE_AVATAR;
                 navVerifiedBadge.style.display = 'none';
             }
