@@ -10,20 +10,14 @@
 
     <style>
         /* ==========================================
-           TOKENS
-           Typography kept: Poppins (light body weight).
-           Accent kept: the original stellar blue.
-           Everything else — surfaces, structure, signature — rebuilt
-           around a "kernel panel" idea: a boot/monitor readout,
-           hex addresses instead of decorative numbering, hairline
-           bracket framing instead of soft cards + shadows.
+           TOKENS & SYSTEM VARS
            ========================================== */
         :root {
             --bg-color: #f5f6f8;
             --bg-raised: #ffffff;
             --logo-color: #0b1220;
             --link-color: #5b6472;
-            --link-hover: #3b82f6; /* Original Stellar Blue — unchanged */
+            --link-hover: #3b82f6; /* Original Stellar Blue */
             --text-main: #0b1220;
             --text-muted: #6b7280;
             --header-bg: rgba(255, 255, 255, 0.86);
@@ -45,7 +39,7 @@
                 --bg-raised: #0b0f17;
                 --logo-color: #f1f5f9;
                 --link-color: #8b95a5;
-                --link-hover: #58a6ff; /* Original Stellar Blue (dark) — unchanged */
+                --link-hover: #58a6ff;
                 --text-main: #f1f5f9;
                 --text-muted: #7c8797;
                 --header-bg: rgba(5, 7, 12, 0.82);
@@ -79,7 +73,6 @@
             position: relative;
         }
 
-        /* Faint system grid — the "panel" the whole UI sits on */
         .bg-grid {
             position: fixed;
             inset: 0;
@@ -92,9 +85,7 @@
             mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 85%);
         }
 
-        .mono {
-            font-family: 'JetBrains Mono', monospace;
-        }
+        .mono { font-family: 'JetBrains Mono', monospace; }
 
         header, main, .toast { position: relative; z-index: 1; }
 
@@ -132,8 +123,6 @@
             padding-left: 14px;
         }
 
-        /* Signature: a live "cursor" bracket in front of the wordmark,
-           standing in for a kernel prompt caret */
         .logo::before {
             content: '';
             position: absolute;
@@ -220,6 +209,7 @@
             border-radius: 6px;
             position: relative;
             letter-spacing: 0.2px;
+            white-space: nowrap;
         }
 
         nav a:hover {
@@ -229,10 +219,9 @@
 
         nav a.active {
             color: var(--link-hover);
+            padding: 6px 16px;
         }
 
-        /* Bracket markers replace the underline sweep — reads like a
-           selected register in a debugger rather than a menu underline */
         nav a.active::before {
             content: '[';
             position: absolute;
@@ -246,9 +235,6 @@
             right: -2px;
             color: var(--link-hover);
             font-family: 'JetBrains Mono', monospace;
-        }
-        nav a.active {
-            padding: 6px 16px;
         }
 
         /* ---------- Main ---------- */
@@ -338,16 +324,9 @@
             }
         }
 
-        .open-feature-item:hover {
-            background: var(--grid-line);
-        }
+        .open-feature-item:hover { background: var(--grid-line); }
+        .open-feature-item:hover .item-marker { color: var(--link-hover); }
 
-        .open-feature-item:hover .item-marker {
-            color: var(--link-hover);
-        }
-
-        /* Hex address prefix — grounded in the fact this is a kernel
-           project: features get addressed like memory offsets */
         .open-feature-item::before {
             content: '0x0' counter(feature-addr, upper-hex);
             font-family: 'JetBrains Mono', monospace;
@@ -409,7 +388,7 @@
             font-size: 16px;
         }
 
-        /* ---------- Beta / auth forms ---------- */
+        /* ---------- Auth Forms & Account Panels ---------- */
         .beta-form-container {
             max-width: 420px;
             margin: 0 auto;
@@ -421,8 +400,6 @@
             animation: slideUpFade 0.5s ease forwards;
         }
 
-        /* Corner-bracket framing — the recurring signature motif,
-           standing in for a HUD/panel reticle rather than a soft card */
         .beta-form-container::before,
         .beta-form-container::after,
         .profile-card::before,
@@ -482,12 +459,6 @@
             opacity: 0.55;
             cursor: not-allowed;
             background-color: rgba(0, 0, 0, 0.02);
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .form-group input:disabled {
-                background-color: rgba(255, 255, 255, 0.02);
-            }
         }
 
         .cooldown-warning {
@@ -566,12 +537,12 @@
             font-weight: 400;
         }
 
-        /* ---------- Profile card / status ---------- */
+        /* ---------- Profile Card ---------- */
         .profile-container {
             display: flex;
             flex-direction: column;
             gap: 28px;
-            padding: 36px 0;
+            padding: 10px 0 36px 0;
             animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
@@ -659,10 +630,7 @@
             text-transform: uppercase;
         }
 
-        .profile-details-area {
-            flex-grow: 1;
-            width: 100%;
-        }
+        .profile-details-area { flex-grow: 1; width: 100%; }
 
         .profile-row {
             border-bottom: 1px solid var(--divider-line);
@@ -684,17 +652,6 @@
         .profile-row-val {
             color: var(--text-main);
             font-weight: 400;
-        }
-
-        .user-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border: 1px solid var(--link-hover);
-            color: var(--link-hover);
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 500;
-            margin-bottom: 12px;
         }
 
         .logout-btn {
@@ -783,19 +740,9 @@
             margin-right: 10px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @keyframes slideUpFade {
-            from { opacity: 0; transform: translateY(24px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes slideUpFadeItem {
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUpFadeItem { to { opacity: 1; transform: translateY(0); } }
 
         .open-feature-item:nth-child(1) { animation-delay: 0.05s; }
         .open-feature-item:nth-child(2) { animation-delay: 0.09s; }
@@ -804,7 +751,6 @@
         .open-feature-item:nth-child(5) { animation-delay: 0.21s; }
         .open-feature-item:nth-child(6) { animation-delay: 0.25s; }
 
-        /* Respect reduced motion */
         @media (prefers-reduced-motion: reduce) {
             .logo::before { animation: none; opacity: 1; }
             .about-open-content, .open-feature-item, .hero-placeholder,
@@ -815,26 +761,29 @@
             }
         }
 
-        /* Visible keyboard focus */
         a:focus-visible, button:focus-visible, input:focus-visible {
             outline: 2px solid var(--link-hover);
             outline-offset: 2px;
         }
 
-        /* ---------- Mobile ---------- */
-        @media (max-width: 600px) {
+        /* ---------- Mobile Layout Optimizations ---------- */
+        @media (max-width: 680px) {
             header {
-                flex-direction: column;
-                gap: 10px;
-                padding: 14px 20px;
-                text-align: center;
-                height: auto;
-                align-items: center;
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 0 16px;
+                height: 56px;
             }
 
-            nav { flex-direction: column; gap: 10px; }
-            nav ul { gap: 4px; flex-wrap: wrap; justify-content: center; }
-            nav a { font-size: 12.5px; }
+            nav ul {
+                display: flex;
+                overflow-x: auto;
+                max-width: calc(100vw - 120px);
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+
+            nav ul::-webkit-scrollbar { display: none; }
 
             .about-open-content h1 { font-size: 26px; }
             .about-open-content p.subtitle { font-size: 14.5px; margin-bottom: 24px; }
@@ -847,7 +796,7 @@
             }
 
             .profile-card { max-width: 100%; }
-            .logo-area { width: 100%; justify-content: center; }
+            .badge-wrapper { margin-left: 10px !important; }
         }
     </style>
 </head>
@@ -866,9 +815,10 @@
                 <li><a class="nav-link" onclick="switchTab('beta')">Beta</a></li>
                 <li><a class="nav-link" onclick="switchTab('about')">About</a></li>
                 <li><a class="nav-link" onclick="switchTab('requirements')">Requirements</a></li>
+                <li><a class="nav-link" onclick="switchTab('account')">Account</a></li>
             </ul>
-            <div class="badge-wrapper" style="margin-left: 24px;">
-                <img src="" class="nav-profile-badge" id="nav-avatar" onclick="switchTab('beta')" alt="Profile">
+            <div class="badge-wrapper" style="margin-left: 20px;">
+                <img src="" class="nav-profile-badge" id="nav-avatar" onclick="switchTab('account')" alt="Profile">
                 <span class="nav-verified-indicator" id="nav-avatar-verified">
                     <svg viewBox="0 0 24 24">
                         <polyline points="20 6 9 17 4 12"></polyline>
@@ -879,14 +829,16 @@
     </header>
 
     <main>
+        <!-- HOME TAB -->
         <section id="home" class="tab-content active">
             <div class="hero-placeholder">
                 <span class="eyebrow mono">stellarOS · kernel: nevora</span>
-                <h2>Welcome to stellarOS</h2>
+                <h2 id="home-greeting">Welcome, [User]</h2>
                 <p>Designed for performance, built for simplicity.</p>
             </div>
         </section>
 
+        <!-- DOWNLOADS TAB -->
         <section id="downloads" class="tab-content">
             <div class="hero-placeholder">
                 <h2>Downloads</h2>
@@ -894,14 +846,35 @@
             </div>
         </section>
 
+        <!-- BETA PROGRAM TAB (PURE PROGRAM INFO / RELEASE STREAM) -->
         <section id="beta" class="tab-content">
             <div class="about-open-content">
                 <span class="eyebrow mono">access · beta channel</span>
                 <h1>Beta Program Portal</h1>
-                <p class="subtitle" id="beta-intro">
+                <p class="subtitle">
                     Be among the first to experience early innovations in stellarOS. Test cutting-edge builds, provide feedback, and help us refine features as we build a faster, lighter desktop.
                 </p>
 
+                <div class="open-feature-grid">
+                    <div class="open-feature-item">
+                        <span class="item-marker">Channel Branch</span>
+                        <span class="item-text">Dev-Beta Track · Active Rolling Release</span>
+                    </div>
+                    <div class="open-feature-item">
+                        <span class="item-marker">Target Kernel</span>
+                        <span class="item-text">nevora-v0.28-release</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACCOUNT TAB (SIGN IN, SIGN UP, PROFILE MANAGEMENT) -->
+        <section id="account" class="tab-content">
+            <div class="about-open-content">
+                <span class="eyebrow mono">identity · authentication</span>
+                <h1 id="account-tab-title">Account Portal</h1>
+
+                <!-- Auth: Sign In View -->
                 <div id="auth-signin-view" class="beta-form-container" style="display: none;">
                     <form onsubmit="performSignIn(event)">
                         <div class="form-group">
@@ -925,6 +898,7 @@
                     </form>
                 </div>
 
+                <!-- Auth: Sign Up View -->
                 <div id="auth-signup-view" class="beta-form-container" style="display: none;">
                     <form onsubmit="performSignUp(event)">
                         <div class="form-group">
@@ -942,46 +916,48 @@
                     </form>
                 </div>
 
+                <!-- Auth: Email Verification View -->
                 <div id="auth-verify-view" class="beta-form-container" style="display: none;">
                     <h2 style="font-size: 19px; font-weight: 400; margin-bottom: 8px;">Verify Your Email Address</h2>
                     <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 24px;" id="verify-instructions">
-                        A real verification link has been sent to your inbox. Please click the link inside your email to activate your account.
+                        A verification link has been sent to your inbox. Please click the link to activate your account.
                     </p>
                     <button onclick="checkEmailVerifiedStatus()" class="btn-submit" style="margin-bottom: 15px;">I've Verified My Email</button>
                     <button onclick="resendVerificationLink()" class="btn-submit" style="background: transparent; color: var(--link-hover); border: 1px solid var(--link-hover)">Resend Email</button>
                 </div>
 
+                <!-- Auth: Profile Setup / Edit View -->
                 <div id="auth-profile-setup-view" class="beta-form-container" style="display: none;">
                     <h2 style="font-size: 22px; font-weight: 300; margin-bottom: 8px;">Set Up Your stellarOS ID</h2>
                     <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 24px;" id="cooldown-helper-text">
-                        Complete your beta program membership by setting up your unique handle, display name, and avatar picture.
+                        Set up your unique handle, display name, and custom profile picture.
                     </p>
                     <form onsubmit="performProfileUpdate(event)">
                         <img src="" class="onboarding-avatar-preview" id="setup-avatar-preview" alt="Avatar Preview">
 
                         <div class="form-group">
                             <label for="profile-display-input">Display Name</label>
-                            <input type="text" id="profile-display-input" required placeholder="e.g. John Doe">
+                            <input type="text" id="profile-display-input" required placeholder="e.g. Habib">
                             <span class="cooldown-warning" id="name-cooldown-warning">Locked</span>
                         </div>
                         <div class="form-group">
                             <label for="profile-username-input">Unique Username</label>
-                            <input type="text" id="profile-username-input" required placeholder="e.g. johndoe (letters & numbers only)" pattern="^[a-zA-Z0-9_]{3,15}$" title="Username must be 3-15 alphanumeric characters.">
+                            <input type="text" id="profile-username-input" required placeholder="e.g. habib" pattern="^[a-zA-Z0-9_]{3,15}$" title="Username must be 3-15 alphanumeric characters.">
                             <span class="cooldown-warning" id="username-cooldown-warning">Locked</span>
                         </div>
 
                         <div style="margin-bottom: 24px;">
-                            <label class="avatar-selection-title" style="display: block; margin-bottom: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);">Device Custom Picture</label>
+                            <label style="display: block; margin-bottom: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);">Custom Photo</label>
                             <button type="button" class="btn-secondary" onclick="document.getElementById('pfp-upload-input').click()">📁 Select Photo from Device</button>
                             <input type="file" id="pfp-upload-input" accept="image/*" style="display: none;" onchange="handleDeviceImageUpload(event)">
                         </div>
 
-                        <button type="submit" class="btn-submit" id="btn-profile-text">Save Profile Settings</button>
+                        <button type="submit" class="btn-submit" id="btn-profile-text">Save Settings</button>
                     </form>
                 </div>
 
+                <!-- Auth Status / Account Dashboard -->
                 <div id="auth-status-view" class="profile-container" style="display: none;">
-
                     <div class="profile-card">
                         <img src="" class="profile-avatar-large" id="card-avatar" alt="User Avatar">
                         <div class="profile-display-name-row">
@@ -1029,11 +1005,11 @@
                             <button class="logout-btn" onclick="performLogout()">Sign Out</button>
                         </div>
                     </div>
-
                 </div>
             </div>
         </section>
 
+        <!-- ABOUT TAB -->
         <section id="about" class="tab-content">
             <div class="about-open-content">
                 <span class="eyebrow mono">system · overview</span>
@@ -1082,6 +1058,7 @@
             </div>
         </section>
 
+        <!-- REQUIREMENTS TAB -->
         <section id="requirements" class="tab-content">
             <div class="hero-placeholder">
                 <h2>System Requirements</h2>
@@ -1111,9 +1088,6 @@
             updateProfile
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // =========================================================================
-        // YOUR LIVE ENCRYPTED FIREBASE CONFIGURATION
-        // =========================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyAKlMEAGWBuBfcCDzc3D6bg4-C-phhcTqU",
             authDomain: "stellaros-auth.firebaseapp.com",
@@ -1124,27 +1098,19 @@
             measurementId: "G-D35DKGH3MS"
         };
 
-        // Initialize Firebase services safely
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Vector SVG-based "unknown guy" placeholder profile picture (Used when no custom file exists)
         const DEFAULT_SILHOUETTE_AVATAR = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2394a3b8"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
 
-        let selectedAvatarUrl = ""; // Tracks the currently processed image data-URI
+        let selectedAvatarUrl = "";
 
-        // Monitor active user persistence states across restarts
         onAuthStateChanged(auth, (user) => {
             handleUserStateChange(user);
         });
 
-        // Toggle user login panels
         window.toggleAuthView = function(view) {
-            if (view === 'signin') {
-                showView('auth-signin-view');
-            } else {
-                showView('auth-signup-view');
-            }
+            showView(view === 'signin' ? 'auth-signin-view' : 'auth-signup-view');
         };
 
         function showView(viewId) {
@@ -1163,29 +1129,25 @@
             });
         }
 
-        // Helper function to resolve active avatar from persistent local storage or fallback to default silhouette
         function getResolvedAvatarUrl(user) {
             if (!user) return DEFAULT_SILHOUETTE_AVATAR;
             const localCustomAvatar = localStorage.getItem(`stellarOS_avatar_${user.uid}`);
             return localCustomAvatar || user.photoURL || DEFAULT_SILHOUETTE_AVATAR;
         }
 
-        // Handle structural view updates depending on verification status & profile setup
         function handleUserStateChange(user) {
             const navAvatar = document.getElementById('nav-avatar');
             const navVerifiedBadge = document.getElementById('nav-avatar-verified');
+            const greeting = document.getElementById('home-greeting');
 
             if (user) {
                 const resolvedAvatar = getResolvedAvatarUrl(user);
                 navAvatar.src = resolvedAvatar;
 
                 if (user.emailVerified) {
-                    // Check if profile details (Display Name) are set up
                     if (user.displayName) {
                         showView('auth-status-view');
-                        document.getElementById('beta-intro').style.display = 'none';
 
-                        // Parse out Display Name and Username
                         let displayName = user.displayName;
                         let username = "";
                         if (displayName.includes('::')) {
@@ -1194,7 +1156,8 @@
                             username = parts[1];
                         }
 
-                        // Determine if they are the special verified user @habib
+                        if (greeting) greeting.innerText = `Welcome, ${displayName}`;
+
                         const isHabib = username.toLowerCase() === 'habib';
                         const verifiedBadge = document.getElementById('card-verified-badge');
 
@@ -1206,34 +1169,28 @@
                             navVerifiedBadge.style.display = 'none';
                         }
 
-                        // Update page elements with Profile details (prioritizing custom device pfp)
                         document.getElementById('card-avatar').src = resolvedAvatar;
                         document.getElementById('card-display-name').innerText = displayName;
                         document.getElementById('card-username').innerText = username ? `@${username}` : `@tester`;
                         document.getElementById('profile-email-val').innerText = user.email;
                     } else {
-                        // Email verified but profile details are not set up yet!
                         selectedAvatarUrl = DEFAULT_SILHOUETTE_AVATAR;
                         document.getElementById('setup-avatar-preview').src = DEFAULT_SILHOUETTE_AVATAR;
                         showView('auth-profile-setup-view');
-                        document.getElementById('beta-intro').style.display = 'block';
                         navVerifiedBadge.style.display = 'none';
                     }
                 } else {
                     showView('auth-verify-view');
-                    document.getElementById('beta-intro').style.display = 'block';
                     navVerifiedBadge.style.display = 'none';
                 }
             } else {
                 showView('auth-signup-view');
-                document.getElementById('beta-intro').style.display = 'block';
-                // Reset nav avatar back to standard unknown guy preset as Guest
+                if (greeting) greeting.innerText = "Welcome, [User]";
                 navAvatar.src = DEFAULT_SILHOUETTE_AVATAR;
                 navVerifiedBadge.style.display = 'none';
             }
         }
 
-        // Real Sign Up with Live Email Verification Dispatch
         window.performSignUp = async function(e) {
             e.preventDefault();
             const email = document.getElementById('signup-email').value;
@@ -1250,9 +1207,8 @@
 
             try {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                // Dispatching real confirmation verification email link to the inbox
                 await sendEmailVerification(userCredential.user);
-                showToast("Account created! Real verification link sent to your email.", "✉️");
+                showToast("Account created! Verification link sent to your email.", "✉️");
                 handleUserStateChange(userCredential.user);
             } catch (error) {
                 showToast(error.message, "❌");
@@ -1262,7 +1218,6 @@
             }
         };
 
-        // Real Sign In
         window.performSignIn = async function(e) {
             e.preventDefault();
             const email = document.getElementById('signin-email').value;
@@ -1284,7 +1239,6 @@
             }
         };
 
-        // Complete Profile Update Process with Bypass for Firebase Character Limits and robust COOLDOWN Checks
         window.performProfileUpdate = async function(e) {
             e.preventDefault();
             const displayName = document.getElementById('profile-display-input').value;
@@ -1296,7 +1250,6 @@
             const uid = auth.currentUser.uid;
             const now = Date.now();
 
-            // Extract existing profile details if they exist
             let currentDisplayName = "";
             let currentUsername = "";
             if (auth.currentUser.displayName && auth.currentUser.displayName.includes('::')) {
@@ -1305,7 +1258,6 @@
                 currentUsername = parts[1];
             }
 
-            // Check Display Name change restriction (3-day cooldown)
             if (currentDisplayName !== "" && displayName !== currentDisplayName) {
                 const lastChange = parseInt(localStorage.getItem(`stellarOS_last_name_change_${uid}`) || "0");
                 const daysLeft = 3 - (now - lastChange) / (1000 * 60 * 60 * 24);
@@ -1315,7 +1267,6 @@
                 }
             }
 
-            // Check Username change restriction (30-day cooldown)
             if (currentUsername !== "" && username !== currentUsername) {
                 const lastChange = parseInt(localStorage.getItem(`stellarOS_last_username_change_${uid}`) || "0");
                 const daysLeft = 30 - (now - lastChange) / (1000 * 60 * 60 * 24);
@@ -1330,9 +1281,7 @@
 
             try {
                 const combinedName = `${displayName}::${username}`;
-                let finalFirebasePhotoUrl = DEFAULT_SILHOUETTE_AVATAR;
 
-                // Save base64 photo locally to bypass Firebase character limit, and store standard silhouette on Firebase Auth
                 if (selectedAvatarUrl && selectedAvatarUrl.startsWith('data:image')) {
                     localStorage.setItem(`stellarOS_avatar_${uid}`, selectedAvatarUrl);
                 } else if (selectedAvatarUrl === "" || selectedAvatarUrl === DEFAULT_SILHOUETTE_AVATAR) {
@@ -1341,10 +1290,9 @@
 
                 await updateProfile(auth.currentUser, {
                     displayName: combinedName,
-                    photoURL: finalFirebasePhotoUrl
+                    photoURL: DEFAULT_SILHOUETTE_AVATAR
                 });
 
-                // Update cooldown trackers only if edits were successfully committed
                 if (currentDisplayName !== displayName) {
                     localStorage.setItem(`stellarOS_last_name_change_${uid}`, now.toString());
                 }
@@ -1358,22 +1306,17 @@
                 showToast(error.message, "❌");
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerText = "Save Profile Settings";
+                submitBtn.innerText = "Save Settings";
             }
         };
 
-        // Helper countdown formatter
         function getCooldownRemainingString(msRemaining) {
             const totalHours = Math.floor(msRemaining / (1000 * 60 * 60));
             const days = Math.floor(totalHours / 24);
             const hours = totalHours % 24;
-            if (days > 0) {
-                return `Locked for ${days}d ${hours}h`;
-            }
-            return `Locked for ${hours}h`;
+            return days > 0 ? `Locked for ${days}d ${hours}h` : `Locked for ${hours}h`;
         }
 
-        // Allow user to trigger Edit Mode anytime (Checks and locks input fields based on cooldowns)
         window.triggerProfileEdit = function() {
             if (auth.currentUser) {
                 const uid = auth.currentUser.uid;
@@ -1387,12 +1330,10 @@
                     username = parts[1];
                 }
 
-                // Populate form inputs
                 const displayNameInput = document.getElementById('profile-display-input');
                 const usernameInput = document.getElementById('profile-username-input');
                 const nameWarning = document.getElementById('name-cooldown-warning');
                 const usernameWarning = document.getElementById('username-cooldown-warning');
-                const helperText = document.getElementById('cooldown-helper-text');
 
                 displayNameInput.value = displayName;
                 usernameInput.value = username;
@@ -1401,14 +1342,11 @@
                 document.getElementById('setup-avatar-preview').src = currentAvatar;
                 selectedAvatarUrl = currentAvatar;
 
-                // Reset statuses
                 displayNameInput.disabled = false;
                 usernameInput.disabled = false;
                 nameWarning.style.display = 'none';
                 usernameWarning.style.display = 'none';
-                helperText.innerText = "Complete your beta program membership by setting up your unique handle, display name, and avatar picture.";
 
-                // Enforce 3-day Name Cooldown locks
                 const nameLastChange = parseInt(localStorage.getItem(`stellarOS_last_name_change_${uid}`) || "0");
                 const nameTimeDiff = now - nameLastChange;
                 const nameCooldownDuration = 3 * 24 * 60 * 60 * 1000;
@@ -1418,7 +1356,6 @@
                     nameWarning.style.display = 'block';
                 }
 
-                // Enforce 30-day Username Cooldown locks
                 const usernameLastChange = parseInt(localStorage.getItem(`stellarOS_last_username_change_${uid}`) || "0");
                 const usernameTimeDiff = now - usernameLastChange;
                 const usernameCooldownDuration = 30 * 24 * 60 * 60 * 1000;
@@ -1432,7 +1369,6 @@
             }
         };
 
-        // Verification checking triggers reloading the firebase cached token
         window.checkEmailVerifiedStatus = async function() {
             if (auth.currentUser) {
                 try {
@@ -1449,35 +1385,32 @@
             }
         };
 
-        // Resend Verification link
         window.resendVerificationLink = async function() {
             if (auth.currentUser) {
                 try {
                     await sendEmailVerification(auth.currentUser);
-                    showToast("Verification link successfully resent to your inbox!", "✉️");
+                    showToast("Verification link successfully resent!", "✉️");
                 } catch (error) {
                     showToast(error.message, "❌");
                 }
             }
         };
 
-        // Real Password Reset Email Dispatcher
         window.handleForgotPassword = async function() {
             const email = document.getElementById('signin-email').value;
             if (!email) {
-                showToast("Please type your email address first inside the input box.", "⚠️");
+                showToast("Please enter your email address first.", "⚠️");
                 return;
             }
 
             try {
                 await sendPasswordResetEmail(auth, email);
-                showToast(`Password reset link successfully sent to ${email}!`, "✉️");
+                showToast(`Password reset link sent to ${email}!`, "✉️");
             } catch (error) {
                 showToast(error.message, "❌");
             }
         };
 
-        // Sign Out trigger
         window.performLogout = async function() {
             try {
                 await signOut(auth);
@@ -1487,9 +1420,6 @@
             }
         };
 
-        // =========================================================================
-        // REAL DEVICE IMAGE UPLOADER & COMPRESSION PIPELINE
-        // =========================================================================
         window.handleDeviceImageUpload = function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -1501,14 +1431,11 @@
                     const canvas = document.getElementById('offscreen-compressor');
                     const ctx = canvas.getContext('2d');
 
-                    // Compress and format to 120x120px to fit perfectly on standard resolution
                     canvas.width = 120;
                     canvas.height = 120;
                     ctx.drawImage(img, 0, 0, 120, 120);
 
                     selectedAvatarUrl = canvas.toDataURL('image/jpeg', 0.85);
-
-                    // Update preview source in real-time
                     document.getElementById('setup-avatar-preview').src = selectedAvatarUrl;
                     showToast("Custom photo loaded successfully!", "🖼️");
                 };
@@ -1517,12 +1444,9 @@
             reader.readAsDataURL(file);
         };
 
-        // =========================================================================
-        // BIOMETRIC PASSKEY UTILITIES (LOCAL KEY REGISTER & VAULT)
-        // =========================================================================
         window.registerDevicePasskey = async function() {
             if (!window.PublicKeyCredential) {
-                showToast("Biometric passkeys are not supported on this browser/device.", "⚠️");
+                showToast("Biometric passkeys are not supported on this browser.", "⚠️");
                 return;
             }
 
@@ -1530,7 +1454,6 @@
             if (!currentUser) return;
 
             try {
-                // Create random cryptographic material
                 const randomChallenge = new Uint8Array(16);
                 window.crypto.getRandomValues(randomChallenge);
 
@@ -1542,10 +1465,10 @@
                         name: currentUser.email,
                         displayName: currentUser.displayName || "stellarOS Tester"
                     },
-                    pubKeyCredParams: [{ type: "public-key", alg: -7 }], // ES256 support
+                    pubKeyCredParams: [{ type: "public-key", alg: -7 }],
                     timeout: 60000,
                     authenticatorSelection: {
-                        authenticatorAttachment: "platform", // Platform (TouchID/FaceID/Device PIN)
+                        authenticatorAttachment: "platform",
                         userVerification: "required"
                     }
                 };
@@ -1553,25 +1476,22 @@
                 const credential = await navigator.credentials.create({ publicKey: createCredentialOptions });
 
                 if (credential) {
-                    // Secure registration vault mapped directly inside device
                     const passkeyVault = JSON.parse(localStorage.getItem('stellarOS_passkeys')) || {};
                     passkeyVault[currentUser.email] = {
                         credentialId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))),
                         displayName: currentUser.displayName,
-                        authBackup: currentUser.email // Links back to profile securely
+                        authBackup: currentUser.email
                     };
                     localStorage.setItem('stellarOS_passkeys', JSON.stringify(passkeyVault));
-                    // Keep user credentials locally cached for instant biometric scan
                     localStorage.setItem('stellarOS_lastEmail', currentUser.email);
 
                     showToast("Passkey registered! You can now log in biometrically.", "✨");
                 }
             } catch (err) {
-                showToast("Setup interrupted or not supported on this hardware configuration.", "⚠️");
+                showToast("Setup interrupted or not supported.", "⚠️");
             }
         };
 
-        // Sign in securely using standard Device Biometrics/Passkeys
         window.performPasskeySignIn = async function() {
             if (!window.PublicKeyCredential) {
                 showToast("Device passkeys are not available here.", "⚠️");
@@ -1582,7 +1502,7 @@
             const lastEmail = localStorage.getItem('stellarOS_lastEmail');
 
             if (!lastEmail || !passkeyVault[lastEmail]) {
-                showToast("No passkey records found. Please sign up or login with your password first.", "⚠️");
+                showToast("No passkey records found.", "⚠️");
                 return;
             }
 
@@ -1603,30 +1523,23 @@
                 const assertion = await navigator.credentials.get({ publicKey: getCredentialOptions });
                 if (assertion) {
                     showToast("Authentication confirmed. Accessing stellarOS cloud...", "🔑");
-                    // Fetch user info & automatically access session since passkey verified the real device owner
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
+                    setTimeout(() => { window.location.reload(); }, 1000);
                 }
             } catch (err) {
-                showToast("Verification failed or rejected by system auth.", "❌");
+                showToast("Verification failed.", "❌");
             }
         };
 
-        // Toast notifications logic
         function showToast(message, icon = "📧") {
             const toast = document.getElementById('toast');
             document.getElementById('toast-message').innerText = message;
             document.getElementById('toast-icon').innerText = icon;
             toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 6000);
+            setTimeout(() => { toast.classList.remove('show'); }, 6000);
         }
     </script>
 
     <script>
-        // Tab changes with kinetic scroll support
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(section => {
                 section.classList.remove('active');
@@ -1639,14 +1552,11 @@
             const targetSection = document.getElementById(tabId);
             if (targetSection) {
                 targetSection.classList.add('active');
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
             const clickedLink = Array.from(document.querySelectorAll('.nav-link')).find(link =>
-                link.getAttribute('onclick').includes(`'${tabId}'`)
+                link.getAttribute('onclick') && link.getAttribute('onclick').includes(`'${tabId}'`)
             );
             if (clickedLink) {
                 clickedLink.classList.add('active');
@@ -1654,155 +1564,30 @@
         }
     </script>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const userLang = navigator.language || navigator.userLanguage;
+            const langKey = userLang.split('-')[0];
 
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const userLang = navigator.language || navigator.userLanguage;
-        const langKey = userLang.split('-')[0];
+            if (langKey === 'es') {
+                const setTxt = (selector, text) => { const el = document.querySelector(selector); if(el) el.textContent = text; };
 
-        // Core Layout Elements
-        const betaTitleElement = document.querySelector('#beta h1');
-        const betaSubtitle = document.querySelector('#beta p.subtitle');
-        const profileTitleElement = document.querySelector('.profile-details-area h2');
-        const profileSetupTitleElement = document.querySelector('#auth-profile-setup-view h2');
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    const tabs = {
+                        "Home": "Inicio",
+                        "Downloads": "Descargas",
+                        "Beta": "Beta",
+                        "About": "Acerca de",
+                        "Requirements": "Requisitos",
+                        "Account": "Cuenta"
+                    };
+                    const text = link.textContent.trim();
+                    if (tabs[text]) link.textContent = tabs[text];
+                });
 
-        if (langKey === 'es') {
-            // 1. Core Titles & Beta Views
-            if (betaTitleElement) betaTitleElement.textContent = "Programa de Inscripción Beta de stellarOS";
-            if (betaSubtitle) betaSubtitle.textContent = "Sé de los primeros en experimentar las primeras innovaciones en stellarOS. Prueba compilaciones de vanguardia, comparte tus comentarios y ayúdanos a perfeccionar las funciones mientras construimos un escritorio más rápido y ligero.";
-            if (profileTitleElement) profileTitleElement.textContent = "ID de stellarOS";
-            if (profileSetupTitleElement) profileSetupTitleElement.textContent = "Configura tu ID de stellarOS";
-
-            // Helper functions for easy translating
-            const setTxt = (selector, text) => { const el = document.querySelector(selector); if(el) el.textContent = text; };
-            const setPlch = (selector, text) => { const el = document.querySelector(selector); if(el) el.placeholder = text; };
-
-            // 2. Navigation Tabs (Ensures all sync correctly)
-            document.querySelectorAll('.nav-link').forEach(link => {
-                const tabs = {
-                    "Home": "Inicio",
-                    "Downloads": "Descargas",
-                    "Beta": "Beta",
-                    "About": "Acerca de",
-                    "Requirements": "Requisitos"
-                };
-                const text = link.textContent.trim();
-                if (tabs[text]) link.textContent = tabs[text];
-            });
-
-            // 3. Home View Translation (Image 3)
-            // Finds the main "Welcome" text block dynamically based on text content
-            document.querySelectorAll('h1, h2, h3, p').forEach(el => {
-                const txt = el.textContent.trim();
-                if (txt === "Welcome to stellarOS") el.textContent = "Bienvenido a stellarOS";
-                if (txt === "Designed for performance, built for simplicity.") el.textContent = "Diseñado para el rendimiento, creado para la simplicidad.";
-                if (txt === "Official public releases and boot images will be available here soon.") el.textContent = "Las versiones públicas oficiales y las imágenes de arranque estarán disponibles aquí pronto.";
-                if (txt === "System Requirements") el.textContent = "Requisitos del Sistema";
-                if (txt === "Hardware and architecture details will be listed soon.") el.textContent = "Los detalles de hardware y arquitectura se enumerarán pronto.";
-            });
-
-            // 4. Downloads View Title (Image 4)
-            const downloadsHeader = document.querySelector('#downloads h1, .downloads-section h1');
-            if (downloadsHeader && downloadsHeader.textContent.trim() === "Downloads") {
-                downloadsHeader.textContent = "Descargas";
+                setTxt('#account-tab-title', "Portal de Cuenta");
             }
-
-            // 5. Requirements View Title (Image 7)
-            const reqHeader = document.querySelector('#requirements h1, .requirements-section h1');
-            if (reqHeader && reqHeader.textContent.trim() === "System Requirements") {
-                reqHeader.textContent = "Requisitos del Sistema";
-            }
-
-            // 6. Profile Dashboard Details card (Image 2)
-            document.querySelectorAll('.profile-row-label').forEach(el => {
-                const txt = el.textContent.trim();
-                if (txt === "Associated Email") el.textContent = "Correo Asociado";
-                if (txt === "Membership Tier") el.textContent = "Nivel de Membresía";
-                if (txt === "Platform Verified") el.textContent = "Plataforma Verificada";
-                if (txt === "Device Passkey") el.textContent = "Passkey del Dispositivo";
-            });
-
-            // Profile Values & Badges
-            document.querySelectorAll('.profile-meta-pill, .profile-badge').forEach(el => {
-                if (el.textContent.trim() === "BETA TESTER") el.textContent = "PROBADOR BETA";
-            });
-            document.querySelectorAll('.profile-row-val').forEach(el => {
-                if (el.textContent.trim() === "Core Developer / Tester") el.textContent = "Desarrollador Núcleo / Probador";
-                if (el.textContent.includes("Yes")) {
-                    el.innerHTML = 'Sí <svg style="width: 14px; height: 14px; fill: #10b981; display: inline-block; vertical-align: middle; margin-left: 4px;" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>';
-                }
-            });
-
-            // Buttons
-            setTxt('.logout-btn, .btn-signout', "Cerrar Sesión");
-            setTxt('.edit-profile-btn', "Editar Perfil");
-            const passkeyBtn = document.querySelector('[onclick*="Passkey"], .passkey-btn');
-            if (passkeyBtn && passkeyBtn.textContent.includes("Setup Biometric Unlock")) {
-                passkeyBtn.innerHTML = "🔑 Configurar Desbloqueo Biométrico";
-            }
-
-            // 7. About Tab Content & Features Grid Fixes (Images 1, 5, 6)
-            const aboutHeader = document.querySelector('#about h1');
-            if (aboutHeader) aboutHeader.textContent = "¿Qué es stellarOS?";
-
-            const aboutSubtitleSection = document.querySelector('#about p.subtitle, #about .subtitle');
-            if (aboutSubtitleSection) aboutSubtitleSection.textContent = "stellarOS es un sistema operativo personalizado basado en un núcleo monolítico, diseñado desde cero para un rendimiento ultrarrápido, confiabilidad diaria y juegos de alto rendimiento.";
-
-            // Expanded map to fully translate feature containers cleanly
-            const featureTranslations = {
-                "PERFORMANCE": ["RENDIMIENTO", "Rendimiento rápido en dispositivos de gama baja. Optimizado para preservar los recursos de hardware."],
-                "CREATIVITY": ["CREATIVIDAD", "Programas de primera mano enfocados en la creatividad, desarrollados de forma nativa para el sistema operativo."],
-                "DESIGN": ["DISEÑO", "Hermosos diseños de interfaz creados con precisión, ligeros en los hilos de procesamiento."],
-                "CONTROL": ["CONTROL", "Gran variedad de opciones de personalización profunda del sistema para construir tu espacio."],
-                "INTELLIGENCE": ["INTELIGENCIA", "Utilidades de Inteligencia Artificial basadas en la nube sin interrupciones usando Google Gemini 3.5 Flash."],
-                "SIMPLICITY": ["SIMPLICIDAD", "Flujo operativo intuitivo diseñado junto con un instalador rápido y sin complicaciones."]
-            };
-
-            document.querySelectorAll('.open-feature-item, .feature-item, [class*="feature"]').forEach(item => {
-                const marker = item.querySelector('.item-marker, h3, .feature-title');
-                const textEl = item.querySelector('.item-text, p, .feature-desc');
-                if (marker && featureTranslations[marker.textContent.trim()]) {
-                    const key = marker.textContent.trim();
-                    marker.textContent = featureTranslations[key][0];
-                    if (textEl) textEl.textContent = featureTranslations[key][1];
-                }
-            });
-
-            // Footer / Banners
-            document.querySelectorAll('.and-more, .about-footer h2').forEach(el => {
-                if (el.textContent.trim() === "And much more!") el.textContent = "¡Y mucho más!";
-            });
-            document.querySelectorAll('.last-updated-banner, .update-ts').forEach(el => {
-                if (el.textContent.includes("Last updated")) el.textContent = "Última actualización: 11/7/2026";
-            });
-
-            // 8. Sign In / Sign Up Input Forms
-            setTxt('label[for="signin-email"]', "Correo Electrónico");
-            setPlch('#signin-email', "nombre@dominio.com");
-            setTxt('label[for="signin-password"]', "Contraseña");
-            setTxt('.forgot-password-link', "¿Olvidaste tu contraseña?");
-            setTxt('#btn-signin-text', "Iniciar Sesión");
-
-            const authSwitchSignin = document.querySelector('#auth-signin-view .auth-switch');
-            if (authSwitchSignin) authSwitchSignin.innerHTML = '¿No tienes una cuenta? <span onclick="toggleAuthView(\'signup\')">Regístrate</span>';
-
-            setTxt('label[for="signup-email"]', "Correo Electrónico");
-            setPlch('#signup-email', "nombre@dominio.com");
-            setTxt('label[for="signup-password"]', "Contraseña");
-            setPlch('#signup-password', "Mínimo 6 caracteres");
-            setTxt('#btn-signup-text', "Crear Cuenta");
-
-            const authSwitchSignup = document.querySelector('#auth-signup-view .auth-switch');
-            if (authSwitchSignup) authSwitchSignup.innerHTML = '¿Ya tienes una cuenta? <span onclick="toggleAuthView(\'signin\')">Inicia Sesión</span>';
-
-        } else {
-            // English Cleanup Fallback
-            if (betaTitleElement) betaTitleElement.textContent = "Beta Enrollment Program";
-            if (profileTitleElement) profileTitleElement.textContent = "stellarOS ID";
-            if (profileSetupTitleElement) profileSetupTitleElement.textContent = "Set Up Your stellarOS ID";
-        }
-    });
-</script>
-
+        });
+    </script>
 </body>
 </html>
