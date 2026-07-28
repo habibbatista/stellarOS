@@ -3,405 +3,314 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>stellarOS</title>
+    
+    <!-- Status Bar Theme Color Fix for Mobile Browsers -->
+    <meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#05070c" media="(prefers-color-scheme: dark)">
+
+    <title>stellarOS · Auth</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Borel&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <style>
-        /* ==========================================
-           TOKENS & SYSTEM VARS
-           ========================================== */
         :root {
-            --bg-color: #fafafa;
+            --bg-color: #f5f6f8;
             --bg-raised: #ffffff;
-            --logo-color: #111111;
-            --link-color: #666666;
+            --logo-color: #0b1220;
+            --link-color: #5b6472;
             --link-hover: #3b82f6;
-            --text-main: #111111;
-            --text-muted: #666666;
-            --header-bg: rgba(250, 250, 250, 0.85);
-            --header-border: rgba(0, 0, 0, 0.08);
-            --divider-line: rgba(0, 0, 0, 0.06);
+            --text-main: #0b1220;
+            --text-muted: #6b7280;
+            --header-bg: rgba(255, 255, 255, 0.86);
+            --divider-line: rgba(11, 18, 32, 0.09);
             --input-bg: #ffffff;
-            --input-border: #e2e8f0;
-            --btn-bg: #111111;
+            --input-border: #d7dbe2;
+            --btn-bg: #0b1220;
             --btn-text: #ffffff;
             --card-bg: #ffffff;
             --profile-card-bg: #ffffff;
             --verified-badge-color: #3b82f6;
+            --mono-dim: rgba(11, 18, 32, 0.35);
+            --grid-line: rgba(11, 18, 32, 0.045);
         }
 
         @media (prefers-color-scheme: dark) {
             :root {
-                --bg-color: #0b0b0c;
-                --bg-raised: #141416;
-                --logo-color: #f4f4f5;
-                --link-color: #94a3b8;
-                --link-hover: #60a5fa;
-                --text-main: #f4f4f5;
-                --text-muted: #94a3b8;
-                --header-bg: rgba(11, 11, 12, 0.82);
-                --header-border: rgba(255, 255, 255, 0.12);
-                --divider-line: rgba(255, 255, 255, 0.08);
-                --input-bg: #141416;
-                --input-border: #27272a;
-                --btn-bg: #f4f4f5;
-                --btn-text: #0d0d0e;
-                --card-bg: #141416;
-                --profile-card-bg: #141416;
-                --verified-badge-color: #60a5fa;
+                --bg-color: #05070c;
+                --bg-raised: #0b0f17;
+                --logo-color: #f1f5f9;
+                --link-color: #8b95a5;
+                --link-hover: #58a6ff;
+                --text-main: #f1f5f9;
+                --text-muted: #7c8797;
+                --header-bg: rgba(5, 7, 12, 0.82);
+                --divider-line: rgba(241, 245, 249, 0.09);
+                --input-bg: #0b0f17;
+                --input-border: #1f2733;
+                --btn-bg: #f1f5f9;
+                --btn-text: #05070c;
+                --card-bg: #0b0f17;
+                --profile-card-bg: #0b0f17;
+                --verified-badge-color: #58a6ff;
+                --mono-dim: rgba(241, 245, 249, 0.3);
+                --grid-line: rgba(241, 245, 249, 0.05);
             }
         }
 
-        html { scroll-behavior: smooth; }
-
-        body {
+        /* Ensure html & body root background color matches theme to prevent top notch glitch */
+        html, body {
             margin: 0;
             padding: 0;
+            background-color: var(--bg-color);
+            transition: background-color 0.3s ease;
             font-family: 'Poppins', sans-serif;
             font-weight: 300;
-            background-color: var(--bg-color);
             color: var(--text-main);
             -webkit-font-smoothing: antialiased;
-            transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
+            position: relative;
         }
 
-        /* ---------- Header & Navigation ---------- */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background-image:
+                linear-gradient(var(--grid-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+            background-size: 42px 42px;
+            mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 85%);
+        }
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        header, main, .toast { position: relative; z-index: 1; }
+
+        /* ---------- Header ---------- */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 32px;
-            height: 64px;
+            padding: 0 24px;
+            height: 56px;
             position: sticky;
             top: 0;
             z-index: 100;
             background-color: var(--header-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--header-border);
+            backdrop-filter: blur(10px) saturate(140%);
+            -webkit-backdrop-filter: blur(10px) saturate(140%);
+            border-bottom: 1px solid var(--divider-line);
             box-sizing: border-box;
-            transition: border-color 0.3s ease, background-color 0.3s ease;
-        }
-
-        .logo-header-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
         }
 
         .logo-area {
             display: flex;
             align-items: center;
+            gap: 12px;
         }
 
         .logo {
-            font-size: 18px;
+            font-size: 19px;
             color: var(--logo-color);
-            font-weight: 500;
             letter-spacing: -0.3px;
-            cursor: pointer;
+            font-weight: 400;
             user-select: none;
-            white-space: nowrap;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-        }
-
-        .logo:active {
-            transform: scale(0.97);
-        }
-
-        nav ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            gap: 24px;
-            align-items: center;
-        }
-
-        nav a {
-            text-decoration: none;
-            color: var(--link-color);
-            font-size: 13.5px;
-            transition: color 0.25s ease, transform 0.2s ease;
-            cursor: pointer;
-            white-space: nowrap;
             position: relative;
-            padding: 4px 0;
-            display: inline-block;
+            padding-left: 14px;
         }
 
-        nav a::after {
+        .logo::before {
             content: '';
             position: absolute;
-            bottom: -2px;
             left: 0;
-            width: 100%;
-            height: 2px;
-            background-color: var(--link-hover);
-            border-radius: 2px;
-            transform: scaleX(0);
-            transform-origin: right;
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 15px;
+            background: var(--link-hover);
+            border-radius: 1px;
+            animation: caretBlink 1.1s steps(1) infinite;
         }
 
-        nav a:hover { 
-            color: var(--text-main); 
-        }
-
-        nav a.active { 
-            color: var(--link-hover); 
-            font-weight: 400; 
-        }
-
-        nav a.active::after {
-            transform: scaleX(1);
-            transform-origin: left;
+        @keyframes caretBlink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0.15; }
         }
 
         .badge-wrapper {
             position: relative;
             display: flex;
             align-items: center;
-            flex-shrink: 0;
         }
 
         .nav-profile-badge {
-            width: 28px;
-            height: 28px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             object-fit: cover;
-            border: 1px solid var(--input-border);
-            cursor: pointer;
-            transition: opacity 0.2s ease, transform 0.2s ease;
+            border: 1.5px solid var(--input-border);
             background-color: var(--input-bg);
-        }
-
-        .nav-profile-badge:hover { 
-            opacity: 0.85; 
-            transform: scale(1.05);
         }
 
         .nav-verified-indicator {
             position: absolute;
-            bottom: -2px;
-            right: -2px;
-            width: 10px;
-            height: 10px;
+            bottom: -1px;
+            right: -1px;
+            width: 12px;
+            height: 12px;
             background-color: var(--verified-badge-color);
             border-radius: 50%;
             display: none;
             align-items: center;
             justify-content: center;
             border: 1.5px solid var(--header-bg);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
 
         .nav-verified-indicator svg {
-            width: 5.5px;
-            height: 5.5px;
+            width: 6.5px;
+            height: 6.5px;
             fill: #ffffff;
         }
 
-        /* ---------- Main Content & Transitions ---------- */
+        /* ---------- Main ---------- */
         main {
             flex-grow: 1;
-            padding: 60px 24px 100px;
-            max-width: 800px;
+            padding: 48px 20px 80px;
+            max-width: 900px;
             margin: 0 auto;
             width: 100%;
             box-sizing: border-box;
         }
 
-        .tab-content { 
-            display: none; 
-            opacity: 0;
-            transform: translateY(10px);
-            transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .tab-content.active { 
-            display: block; 
-        }
-
-        .tab-content.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(16px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
         .eyebrow {
-            display: block;
-            font-size: 12px;
-            letter-spacing: 0.5px;
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
             color: var(--link-hover);
-            margin-bottom: 12px;
-            text-transform: lowercase;
-            font-weight: 500;
-            animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            margin-bottom: 14px;
         }
 
         .about-open-content h1 {
-            font-size: 32px;
-            font-weight: 400;
+            font-size: 36px;
+            font-weight: 300;
             margin-top: 0;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
             color: var(--text-main);
-            letter-spacing: -0.5px;
+            letter-spacing: -0.8px;
             line-height: 1.2;
-            animation: fadeInUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         .about-open-content p.subtitle {
-            font-size: 15px;
-            line-height: 1.7;
+            font-size: 16px;
+            line-height: 1.8;
             color: var(--text-muted);
-            margin-bottom: 48px;
-            max-width: 640px;
-            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        .open-feature-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 24px;
             margin-bottom: 40px;
+            max-width: 720px;
         }
 
-        @media (min-width: 640px) {
-            .open-feature-grid { grid-template-columns: 1fr 1fr; }
-        }
-
-        .open-feature-item {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            padding: 20px;
-            background-color: var(--card-bg);
-            border: 1px solid var(--divider-line);
-            border-radius: 12px;
-            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
-            animation: fadeInUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        .open-feature-item:hover { 
-            transform: translateY(-3px); 
-            border-color: var(--header-border);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
-        }
-
-        .item-marker {
-            color: var(--text-main);
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .item-text {
-            font-size: 13.5px;
-            line-height: 1.6;
-            color: var(--text-muted);
-        }
-
-        .last-updated-banner {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 48px;
-        }
-
-        .hero-placeholder {
-            text-align: center;
-            padding: 80px 20px;
-        }
-
-        .hero-placeholder h2 {
-            font-size: 40px;
-            font-weight: 300;
-            margin-bottom: 12px;
-            letter-spacing: -1px;
-            font-family: 'Poppins', sans-serif;
-            animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        .welcome-borel {
-            font-family: 'Borel', cursive;
-            font-weight: 400;
-            margin-right: 8px;
-            font-size: 0.95em;
-        }
-
-        .hero-placeholder p {
-            color: var(--text-muted);
-            font-size: 15px;
-            margin: 0;
-            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        /* ---------- Forms & Account ---------- */
+        /* ---------- Forms ---------- */
         .beta-form-container {
-            max-width: 380px;
+            max-width: 420px;
             margin: 0 auto;
-            padding: 32px;
+            padding: 28px 28px 24px;
             border: 1px solid var(--divider-line);
-            border-radius: 16px;
+            border-radius: 10px;
             background: var(--card-bg);
-            transition: transform 0.3s ease;
-            animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            position: relative;
+            animation: slideUpFade 0.5s ease forwards;
+        }
+
+        .beta-form-container::before,
+        .beta-form-container::after,
+        .profile-card::before,
+        .profile-card::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-color: var(--link-hover);
+            border-style: solid;
+            opacity: 0.55;
+        }
+        .beta-form-container::before, .profile-card::before {
+            top: -1px; left: -1px;
+            border-width: 2px 0 0 2px;
+        }
+        .beta-form-container::after, .profile-card::after {
+            bottom: -1px; right: -1px;
+            border-width: 0 2px 2px 0;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 22px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
+            position: relative;
         }
 
         .form-group label {
-            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             font-weight: 500;
             color: var(--text-muted);
         }
 
         .form-group input {
-            padding: 10px 14px;
-            border-radius: 8px;
+            padding: 12px 14px;
+            border-radius: 6px;
             border: 1px solid var(--input-border);
             background-color: var(--input-bg);
             color: var(--text-main);
             font-family: 'Poppins', sans-serif;
-            font-size: 14px;
+            font-size: 15px;
             outline: none;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            transition: border-color 0.2s, box-shadow 0.2s, opacity 0.2s;
         }
 
         .form-group input:focus {
             border-color: var(--link-hover);
-            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .form-group input:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .form-group input:disabled {
+                background-color: rgba(255, 255, 255, 0.02);
+            }
+        }
+
+        .cooldown-warning {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: #ef4444;
+            margin-top: 4px;
+            display: none;
+            font-weight: 400;
         }
 
         .forgot-password-link {
             align-self: flex-end;
-            font-size: 12px;
+            font-size: 12.5px;
             color: var(--text-muted);
             cursor: pointer;
-            margin-top: -12px;
-            margin-bottom: 20px;
-            transition: color 0.2s ease;
+            margin-top: -14px;
+            margin-bottom: 18px;
+            transition: color 0.2s;
         }
 
         .forgot-password-link:hover { color: var(--link-hover); }
@@ -410,43 +319,48 @@
             background: transparent;
             border: 1px solid var(--input-border);
             color: var(--text-main);
-            padding: 10px 14px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 6px;
             font-family: 'Poppins', sans-serif;
-            font-size: 13px;
+            font-size: 13.5px;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 14px;
             width: 100%;
             box-sizing: border-box;
         }
 
-        .btn-secondary:hover { 
-            border-color: var(--link-hover); 
+        .btn-secondary:hover {
+            border-color: var(--link-hover);
             color: var(--link-hover);
-            transform: translateY(-1px);
         }
 
         .btn-submit {
             width: 100%;
-            padding: 11px;
+            padding: 13px;
             background-color: var(--btn-bg);
             color: var(--btn-text);
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             font-family: 'Poppins', sans-serif;
             font-weight: 500;
-            font-size: 13.5px;
+            font-size: 14px;
+            letter-spacing: 0.2px;
             cursor: pointer;
-            transition: opacity 0.2s ease, transform 0.2s ease;
+            transition: opacity 0.2s, transform 0.1s;
         }
 
-        .btn-submit:hover { opacity: 0.9; transform: translateY(-1px); }
-        .btn-submit:active { transform: translateY(0); }
+        .btn-submit:hover { opacity: 0.9; }
+        .btn-submit:active { transform: scale(0.98); }
 
         .auth-switch {
             text-align: center;
-            margin-top: 20px;
-            font-size: 13px;
+            margin-top: 18px;
+            font-size: 13.5px;
             color: var(--text-muted);
         }
 
@@ -456,49 +370,47 @@
             font-weight: 400;
         }
 
-        /* ---------- Profile ---------- */
+        /* ---------- Profile Card / Status ---------- */
         .profile-container {
             display: flex;
             flex-direction: column;
-            gap: 32px;
-            padding: 20px 0;
-            animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            gap: 28px;
+            padding: 36px 0;
+            animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        @media (min-width: 640px) {
+        @media (min-width: 768px) {
             .profile-container {
                 flex-direction: row;
                 align-items: flex-start;
+                gap: 48px;
             }
         }
 
         .profile-card {
             background-color: var(--profile-card-bg);
             border: 1px solid var(--divider-line);
-            border-radius: 16px;
-            padding: 32px 24px;
+            border-radius: 10px;
+            padding: 36px 32px;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
+            flex-shrink: 0;
             width: 100%;
-            max-width: 260px;
+            max-width: 300px;
             box-sizing: border-box;
-            transition: border-color 0.25s ease;
+            position: relative;
         }
 
         .profile-avatar-large {
-            width: 88px;
-            height: 88px;
+            width: 104px;
+            height: 104px;
             border-radius: 50%;
             object-fit: cover;
-            margin-bottom: 16px;
+            border: 2px solid var(--link-hover);
+            margin-bottom: 22px;
             background-color: var(--bg-color);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .profile-avatar-large:hover {
-            transform: scale(1.04);
         }
 
         .profile-display-name-row {
@@ -506,10 +418,11 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
+            margin: 0;
         }
 
         .profile-display-name {
-            font-size: 18px;
+            font-size: 21px;
             font-weight: 500;
             color: var(--text-main);
             margin: 0;
@@ -520,420 +433,348 @@
             align-items: center;
             justify-content: center;
             color: var(--verified-badge-color);
+            user-select: none;
         }
 
         .verified-badge svg {
-            width: 16px;
-            height: 16px;
+            width: 17px;
+            height: 17px;
             fill: currentColor;
         }
 
         .profile-username {
+            font-family: 'JetBrains Mono', monospace;
             font-size: 13px;
-            color: var(--text-muted);
-            margin: 4px 0 16px 0;
+            color: var(--link-hover);
+            margin: 6px 0 16px 0;
+            font-weight: 400;
         }
 
         .profile-meta-pill {
-            font-size: 11px;
-            background: rgba(59, 130, 246, 0.1);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10.5px;
+            background: transparent;
+            border: 1px solid var(--link-hover);
             color: var(--link-hover);
             padding: 4px 10px;
             border-radius: 20px;
             font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
-        .profile-details-area { flex-grow: 1; width: 100%; }
+        .profile-details-area {
+            flex-grow: 1;
+            width: 100%;
+        }
 
         .profile-row {
             border-bottom: 1px solid var(--divider-line);
-            padding: 14px 0;
+            padding: 15px 0;
             display: flex;
             justify-content: space-between;
             font-size: 13.5px;
-            transition: border-color 0.2s ease;
         }
 
-        .profile-row-label { color: var(--text-muted); }
-        .profile-row-val { color: var(--text-main); font-weight: 400; }
+        .profile-row-label {
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            align-self: center;
+        }
+
+        .profile-row-val {
+            color: var(--text-main);
+            font-weight: 400;
+        }
 
         .logout-btn {
             background: transparent;
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            padding: 8px 16px;
-            border-radius: 8px;
+            color: var(--link-hover);
+            border: 1px solid var(--link-hover);
+            padding: 10px 18px;
+            border-radius: 6px;
             cursor: pointer;
             font-family: 'Poppins', sans-serif;
-            font-size: 13px;
-            margin-top: 24px;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            font-size: 13.5px;
+            margin-top: 18px;
+            transition: background 0.2s, color 0.2s;
         }
 
-        .logout-btn:hover { 
-            background-color: rgba(239, 68, 68, 0.08); 
-            border-color: rgba(239, 68, 68, 0.4);
-            transform: translateY(-1px);
+        .logout-btn:hover {
+            background-color: var(--link-hover);
+            color: #fff;
         }
 
         .edit-profile-btn {
             background: transparent;
             border: 1px solid var(--divider-line);
-            color: var(--text-main);
-            padding: 8px 16px;
-            border-radius: 8px;
+            color: var(--text-muted);
+            padding: 10px 18px;
+            border-radius: 6px;
             cursor: pointer;
             font-family: 'Poppins', sans-serif;
-            font-size: 13px;
-            margin-top: 24px;
+            font-size: 13.5px;
+            margin-top: 18px;
             margin-right: 12px;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.2s ease;
         }
 
-        .edit-profile-btn:hover { 
-            border-color: var(--text-muted); 
-            transform: translateY(-1px);
+        .edit-profile-btn:hover {
+            border-color: var(--text-main);
+            color: var(--text-main);
         }
 
         .onboarding-avatar-preview {
-            width: 80px;
-            height: 80px;
+            width: 92px;
+            height: 92px;
             border-radius: 50%;
             object-fit: cover;
-            margin: 0 auto 16px auto;
+            border: 2px solid var(--link-hover);
+            margin: 0 auto 20px auto;
             display: block;
             background-color: var(--input-bg);
-            transition: transform 0.2s ease;
         }
 
         /* ---------- Toast ---------- */
         .toast {
             position: fixed;
-            bottom: 24px;
-            right: 24px;
+            bottom: 28px;
+            right: 28px;
             background-color: var(--btn-bg);
             color: var(--btn-text);
-            padding: 12px 18px;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            padding: 14px 20px;
+            border-radius: 8px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.18);
             z-index: 1000;
             transform: translateY(100px);
             opacity: 0;
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
-            font-size: 13px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            font-size: 13.5px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            border: 1px solid var(--divider-line);
         }
 
-        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
 
         .spinner {
-            border: 2px solid rgba(128,128,128,0.25);
-            width: 16px;
-            height: 16px;
+            border: 3px solid rgba(128,128,128,0.25);
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
             border-left-color: var(--link-hover);
-            animation: spin 0.8s linear infinite;
+            animation: spin 1s linear infinite;
             display: inline-block;
             vertical-align: middle;
-            margin-right: 8px;
+            margin-right: 10px;
         }
 
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
-        /* Mobile Adjustments */
-        @media (max-width: 640px) {
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .logo::before { animation: none; opacity: 1; }
+            .beta-form-container, .profile-container, .toast {
+                animation: none !important;
+                opacity: 1 !important;
+                transform: none !important;
+            }
+        }
+
+        a:focus-visible, button:focus-visible, input:focus-visible {
+            outline: 2px solid var(--link-hover);
+            outline-offset: 2px;
+        }
+
+        @media (max-width: 600px) {
             header {
-                flex-direction: column;
+                justify-content: center;
+                padding: 14px 20px;
                 height: auto;
-                padding: 12px 16px;
-                gap: 12px;
             }
-
-            .logo-header-row {
-                width: 100%;
-            }
-
-            nav {
-                width: 100%;
-                overflow-x: auto;
-                scrollbar-width: none;
-                padding-bottom: 2px;
-            }
-
-            nav::-webkit-scrollbar { display: none; }
-
-            nav ul {
-                display: flex;
-                flex-wrap: nowrap;
-                white-space: nowrap;
-                gap: 18px;
-            }
-
             .about-open-content h1 { font-size: 26px; }
-            .hero-placeholder h2 { font-size: 32px; }
+            .about-open-content p.subtitle { font-size: 14.5px; margin-bottom: 24px; }
             .profile-card { max-width: 100%; }
-            main { padding-top: 24px; }
         }
     </style>
 </head>
 <body>
+    <div class="bg-grid" aria-hidden="true"></div>
 
     <header id="navbar">
-        <div class="logo-header-row">
-            <div class="logo-area">
-                <div class="logo" onclick="switchTab('home')">stellarOS</div>
-            </div>
-            
-            <div class="badge-wrapper">
-                <img src="" class="nav-profile-badge" id="nav-avatar" onclick="switchTab('account')" alt="Profile">
-                <span class="nav-verified-indicator" id="nav-avatar-verified">
-                    <svg viewBox="0 0 24 24">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                </span>
-            </div>
+        <div class="logo-area">
+            <div class="logo">stellarOS</div>
         </div>
-
-        <nav>
-            <ul>
-                <li><a class="nav-link active" onclick="switchTab('home')">Home</a></li>
-                <li><a class="nav-link" onclick="switchTab('downloads')">Downloads</a></li>
-                <li><a class="nav-link" onclick="switchTab('beta')">Beta</a></li>
-                <li><a class="nav-link" onclick="switchTab('about')">About</a></li>
-                <li><a class="nav-link" onclick="switchTab('requirements')">Requirements</a></li>
-                <li><a class="nav-link" onclick="switchTab('account')">Account</a></li>
-            </ul>
-        </nav>
+        <div class="badge-wrapper">
+            <img src="" class="nav-profile-badge" id="nav-avatar" alt="Profile">
+            <span class="nav-verified-indicator" id="nav-avatar-verified">
+                <svg viewBox="0 0 24 24">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </span>
+        </div>
     </header>
 
     <main>
-        <!-- HOME TAB -->
-        <section id="home" class="tab-content active visible">
-            <div class="hero-placeholder">
-                <span class="eyebrow">nevora kernel</span>
-                <h2 id="home-greeting"><span class="welcome-borel">welcome,</span><span id="greeting-username">Habib</span></h2>
-                <p>Designed for performance, built for simplicity.</p>
-            </div>
-        </section>
+        <div class="about-open-content">
+            <span class="eyebrow mono">access · authentication</span>
+            <h1>stellarOS ID</h1>
+            <p class="subtitle" id="beta-intro">
+                Sign in or register your account to manage your stellarOS profile, biometric passkeys, and account preferences.
+            </p>
 
-        <!-- DOWNLOADS TAB -->
-        <section id="downloads" class="tab-content">
-            <div class="hero-placeholder">
-                <h2>Downloads</h2>
-                <p>Official public releases and boot images will be available here soon.</p>
-            </div>
-        </section>
+            <!-- Sign In View -->
+            <div id="auth-signin-view" class="beta-form-container" style="display: none;">
+                <form onsubmit="performSignIn(event)">
+                    <div class="form-group">
+                        <label for="signin-email">Email Address</label>
+                        <input type="email" id="signin-email" required placeholder="name@domain.com">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 24px;">
+                        <label for="signin-password">Password</label>
+                        <input type="password" id="signin-password" required placeholder="••••••••">
+                    </div>
+                    <div class="forgot-password-link" onclick="handleForgotPassword()">Forgot Password?</div>
 
-        <!-- BETA PROGRAM TAB -->
-        <section id="beta" class="tab-content">
-            <div class="about-open-content">
-                <span class="eyebrow">beta program</span>
-                <h1>Early Access</h1>
-                <p class="subtitle">
-                    Experience early innovations in stellarOS. Test cutting-edge builds, provide feedback, and help us refine features.
+                    <button type="submit" class="btn-submit" id="btn-signin-text">Sign In</button>
+
+                    <div style="margin: 15px 0; text-align: center; font-size: 12px; color: var(--text-muted);" class="mono">or</div>
+                    <button type="button" class="btn-secondary" onclick="performPasskeySignIn()">🔑 Sign in with Passkey</button>
+
+                    <div class="auth-switch">
+                        Don't have an account yet? <span onclick="toggleAuthView('signup')">Sign Up</span>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Sign Up View -->
+            <div id="auth-signup-view" class="beta-form-container" style="display: none;">
+                <form onsubmit="performSignUp(event)">
+                    <div class="form-group">
+                        <label for="signup-email">Email Address</label>
+                        <input type="email" id="signup-email" required placeholder="name@domain.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" required placeholder="Minimum 6 characters">
+                    </div>
+                    <button type="submit" class="btn-submit" id="btn-signup-text">Create Account</button>
+                    <div class="auth-switch">
+                        Already have an account? <span onclick="toggleAuthView('signin')">Sign In</span>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Verification View -->
+            <div id="auth-verify-view" class="beta-form-container" style="display: none;">
+                <h2 style="font-size: 19px; font-weight: 400; margin-bottom: 8px;">Verify Your Email Address</h2>
+                <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 24px;" id="verify-instructions">
+                    A real verification link has been sent to your inbox. Please click the link inside your email to activate your account.
                 </p>
-
-                <div class="open-feature-grid">
-                    <div class="open-feature-item">
-                        <span class="item-marker">Channel Branch</span>
-                        <span class="item-text">Dev-Beta Track · Active Rolling Release</span>
-                    </div>
-                    <div class="open-feature-item">
-                        <span class="item-marker">Target Kernel</span>
-                        <span class="item-text">nevora-v0.28-release</span>
-                    </div>
-                </div>
+                <button onclick="checkEmailVerifiedStatus()" class="btn-submit" style="margin-bottom: 15px;">I've Verified My Email</button>
+                <button onclick="resendVerificationLink()" class="btn-submit" style="background: transparent; color: var(--link-hover); border: 1px solid var(--link-hover)">Resend Email</button>
             </div>
-        </section>
 
-        <!-- ACCOUNT TAB -->
-        <section id="account" class="tab-content">
-            <div class="about-open-content">
-                <h1 id="account-tab-title">Account</h1>
-
-                <!-- Auth: Sign In View -->
-                <div id="auth-signin-view" class="beta-form-container" style="display: none;">
-                    <form onsubmit="performSignIn(event)">
-                        <div class="form-group">
-                            <label for="signin-email">Email</label>
-                            <input type="email" id="signin-email" required placeholder="name@domain.com">
-                        </div>
-                        <div class="form-group" style="margin-bottom: 20px;">
-                            <label for="signin-password">Password</label>
-                            <input type="password" id="signin-password" required placeholder="••••••••">
-                        </div>
-                        <div class="forgot-password-link" onclick="handleForgotPassword()">Forgot Password?</div>
-
-                        <button type="submit" class="btn-submit" id="btn-signin-text">Sign In</button>
-
-                        <div style="margin: 16px 0; text-align: center; font-size: 12px; color: var(--text-muted);">or</div>
-                        <button type="button" class="btn-secondary" onclick="performPasskeySignIn()">Sign in with Passkey</button>
-
-                        <div class="auth-switch">
-                            Don't have an account? <span onclick="toggleAuthView('signup')">Sign Up</span>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Auth: Sign Up View -->
-                <div id="auth-signup-view" class="beta-form-container" style="display: none;">
-                    <form onsubmit="performSignUp(event)">
-                        <div class="form-group">
-                            <label for="signup-email">Email</label>
-                            <input type="email" id="signup-email" required placeholder="name@domain.com">
-                        </div>
-                        <div class="form-group">
-                            <label for="signup-password">Password</label>
-                            <input type="password" id="signup-password" required placeholder="Minimum 6 characters">
-                        </div>
-                        <button type="submit" class="btn-submit" id="btn-signup-text">Create Account</button>
-                        <div class="auth-switch">
-                            Already have an account? <span onclick="toggleAuthView('signin')">Sign In</span>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Auth: Email Verification View -->
-                <div id="auth-verify-view" class="beta-form-container" style="display: none;">
-                    <h2 style="font-size: 18px; font-weight: 400; margin-bottom: 8px;">Verify Your Email</h2>
-                    <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 20px;" id="verify-instructions">
-                        A verification link has been sent to your inbox.
-                    </p>
-                    <button onclick="checkEmailVerifiedStatus()" class="btn-submit" style="margin-bottom: 12px;">I've Verified My Email</button>
-                    <button onclick="resendVerificationLink()" class="btn-secondary">Resend Email</button>
-                </div>
-
-                <!-- Auth: Profile Setup / Edit View -->
-                <div id="auth-profile-setup-view" class="beta-form-container" style="display: none;">
-                    <h2 style="font-size: 20px; font-weight: 400; margin-bottom: 8px;">Set Up Profile</h2>
-                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;" id="cooldown-helper-text">
-                        Choose your display name and optional custom profile picture.
-                    </p>
-                    <form onsubmit="performProfileUpdate(event)">
-                        <img src="" class="onboarding-avatar-preview" id="setup-avatar-preview" alt="Avatar Preview">
-
-                        <div class="form-group">
-                            <label for="profile-display-input">Display Name</label>
-                            <input type="text" id="profile-display-input" required placeholder="e.g. Habib">
-                        </div>
-                        <div class="form-group">
-                            <label for="profile-username-input">Username</label>
-                            <input type="text" id="profile-username-input" required placeholder="e.g. habib" pattern="^[a-zA-Z0-9_]{3,15}$" title="Username must be 3-15 alphanumeric characters.">
-                        </div>
-
-                        <div style="margin-bottom: 20px;">
-                            <label style="display: block; margin-bottom: 6px; font-size: 12px; font-weight: 500; color: var(--text-muted);">Photo</label>
-                            <button type="button" class="btn-secondary" onclick="document.getElementById('pfp-upload-input').click()">Upload Photo</button>
-                            <input type="file" id="pfp-upload-input" accept="image/*" style="display: none;" onchange="handleDeviceImageUpload(event)">
-                        </div>
-
-                        <button type="submit" class="btn-submit" id="btn-profile-text">Save Settings</button>
-                    </form>
-                </div>
-
-                <!-- Auth Status / Account Dashboard -->
-                <div id="auth-status-view" class="profile-container" style="display: none;">
-                    <div class="profile-card">
-                        <img src="" class="profile-avatar-large" id="card-avatar" alt="User Avatar">
-                        <div class="profile-display-name-row">
-                            <h3 class="profile-display-name" id="card-display-name">---</h3>
-                            <span class="verified-badge" id="card-verified-badge" title="Verified Creator">
-                                <svg viewBox="0 0 24 24">
-                                    <path d="M23 12l-2.44-2.78.34-3.68-3.61-.82-1.89-3.2L12 2.96 8.6 1.52 6.71 4.72l-3.61.81.34 3.68L1 12l2.44 2.78-.34 3.69 3.61.82 1.89 3.18L12 21.04l3.4 1.44 1.89-3.18 3.61-.82-.34-3.69L23 12zm-13 5l-4-4 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                                </svg>
-                            </span>
-                        </div>
-                        <p class="profile-username" id="card-username">@---</p>
-                        <div class="profile-meta-pill">Beta Tester</div>
-                    </div>
-
-                    <div class="profile-details-area">
-                        <h2 style="font-size: 20px; font-weight: 400; margin-top: 0; margin-bottom: 20px;">Account Details</h2>
-
-                        <div class="profile-row">
-                            <span class="profile-row-label">Email</span>
-                            <span class="profile-row-val" id="profile-email-val">---</span>
-                        </div>
-                        <div class="profile-row">
-                            <span class="profile-row-label">Membership</span>
-                            <span class="profile-row-val">Core Developer</span>
-                        </div>
-                        <div class="profile-row" style="align-items: center;">
-                            <span class="profile-row-label">Passkey</span>
-                            <span class="profile-row-val">
-                                <button type="button" class="btn-secondary" style="padding: 4px 10px; font-size: 12px;" onclick="registerDevicePasskey()">Setup Passkey</button>
-                            </span>
-                        </div>
-
-                        <div>
-                            <button class="edit-profile-btn" onclick="triggerProfileEdit()">Edit Profile</button>
-                            <button class="logout-btn" onclick="performLogout()">Sign Out</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ABOUT TAB -->
-        <section id="about" class="tab-content">
-            <div class="about-open-content">
-                <span class="eyebrow">about</span>
-                <h1>Simple, fast operating system.</h1>
-                <p class="subtitle">
-                    stellarOS is a custom operating system designed from the ground up for speed, dependability, and high performance.
+            <!-- Profile Setup / Edit View -->
+            <div id="auth-profile-setup-view" class="beta-form-container" style="display: none;">
+                <h2 style="font-size: 22px; font-weight: 300; margin-bottom: 8px;">Set Up Your stellarOS ID</h2>
+                <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 24px;" id="cooldown-helper-text">
+                    Complete your membership by setting up your unique handle, display name, and avatar picture.
                 </p>
+                <form onsubmit="performProfileUpdate(event)">
+                    <img src="" class="onboarding-avatar-preview" id="setup-avatar-preview" alt="Avatar Preview">
 
-                <div class="open-feature-grid">
-                    <div class="open-feature-item">
-                        <span class="item-marker">Performance</span>
-                        <span class="item-text">Fast performance on low-end devices. Optimized to preserve hardware resources.</span>
+                    <div class="form-group">
+                        <label for="profile-display-input">Display Name</label>
+                        <input type="text" id="profile-display-input" required placeholder="e.g. John Doe">
+                        <span class="cooldown-warning" id="name-cooldown-warning">Locked</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-username-input">Unique Username</label>
+                        <input type="text" id="profile-username-input" required placeholder="e.g. johndoe (letters & numbers only)" pattern="^[a-zA-Z0-9_]{3,15}$" title="Username must be 3-15 alphanumeric characters.">
+                        <span class="cooldown-warning" id="username-cooldown-warning">Locked</span>
                     </div>
 
-                    <div class="open-feature-item">
-                        <span class="item-marker">Creativity</span>
-                        <span class="item-text">Creativity-focused first-party programs developed native to the OS.</span>
+                    <div style="margin-bottom: 24px;">
+                        <label class="avatar-selection-title" style="display: block; margin-bottom: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);">Device Custom Picture</label>
+                        <button type="button" class="btn-secondary" onclick="document.getElementById('pfp-upload-input').click()">📁 Select Photo from Device</button>
+                        <input type="file" id="pfp-upload-input" accept="image/*" style="display: none;" onchange="handleDeviceImageUpload(event)">
                     </div>
 
-                    <div class="open-feature-item">
-                        <span class="item-marker">Design</span>
-                        <span class="item-text">Clean interface layouts crafted with precision, light on system resources.</span>
-                    </div>
+                    <button type="submit" class="btn-submit" id="btn-profile-text">Save Profile Settings</button>
+                </form>
+            </div>
 
-                    <div class="open-feature-item">
-                        <span class="item-marker">Control</span>
-                        <span class="item-text">Deep system customization options to construct your space.</span>
+            <!-- Profile Status / Account Dashboard View -->
+            <div id="auth-status-view" class="profile-container" style="display: none;">
+                <div class="profile-card">
+                    <img src="" class="profile-avatar-large" id="card-avatar" alt="User Avatar">
+                    <div class="profile-display-name-row">
+                        <h3 class="profile-display-name" id="card-display-name">---</h3>
+                        <span class="verified-badge" id="card-verified-badge" title="stellarOS Verified Core Creator">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M23 12l-2.44-2.78.34-3.68-3.61-.82-1.89-3.2L12 2.96 8.6 1.52 6.71 4.72l-3.61.81.34 3.68L1 12l2.44 2.78-.34 3.69 3.61.82 1.89 3.18L12 21.04l3.4 1.44 1.89-3.18 3.61-.82-.34-3.69L23 12zm-13 5l-4-4 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                        </span>
                     </div>
-
-                    <div class="open-feature-item">
-                        <span class="item-marker">Intelligence</span>
-                        <span class="item-text">Seamless cloud-based Artificial Intelligence utilities using Google Gemini 3.5 Flash.</span>
-                    </div>
-
-                    <div class="open-feature-item">
-                        <span class="item-marker">Simplicity</span>
-                        <span class="item-text">User-friendly operating flow built alongside a fast, painless installer.</span>
-                    </div>
+                    <p class="profile-username" id="card-username">@---</p>
+                    <div class="profile-meta-pill">Beta Tester</div>
                 </div>
 
-                <div class="last-updated-banner">
-                    Last updated: 11/7/2026
+                <div class="profile-details-area">
+                    <h2 style="font-size: 24px; font-weight: 300; margin-top: 0; margin-bottom: 22px;">stellarOS Identity Account</h2>
+
+                    <div class="profile-row">
+                        <span class="profile-row-label">Associated Email</span>
+                        <span class="profile-row-val" id="profile-email-val">---</span>
+                    </div>
+                    <div class="profile-row">
+                        <span class="profile-row-label">Membership Tier</span>
+                        <span class="profile-row-val">Core Developer / Tester</span>
+                    </div>
+                    <div class="profile-row">
+                        <span class="profile-row-label">Platform Verified</span>
+                        <span class="profile-row-val" style="color: #10b981; display: inline-flex; align-items: center; gap: 4px;">
+                            Yes
+                            <svg style="width: 14px; height: 14px; fill: currentColor;" viewBox="0 0 24 24">
+                                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                        </span>
+                    </div>
+
+                    <div class="profile-row" style="align-items: center;">
+                        <span class="profile-row-label">Device Passkey</span>
+                        <span class="profile-row-val">
+                            <button type="button" class="btn-secondary" style="margin: 0; padding: 6px 12px; font-size: 12.5px;" onclick="registerDevicePasskey()">🔑 Setup Biometric Unlock</button>
+                        </span>
+                    </div>
+
+                    <div style="margin-top: 28px;">
+                        <button class="edit-profile-btn" onclick="triggerProfileEdit()">Edit Profile</button>
+                        <button class="logout-btn" onclick="performLogout()">Sign Out</button>
+                    </div>
                 </div>
             </div>
-        </section>
-
-        <!-- REQUIREMENTS TAB -->
-        <section id="requirements" class="tab-content">
-            <div class="hero-placeholder">
-                <h2>System Requirements</h2>
-                <p>Hardware and architecture details will be listed soon.</p>
-            </div>
-        </section>
+        </div>
     </main>
 
     <div id="toast" class="toast">
-        <span id="toast-message">Verification email sent</span>
+        <span id="toast-icon">📧</span>
+        <span id="toast-message">Verification email successfully sent!</span>
     </div>
 
     <canvas id="offscreen-compressor" style="display: none;"></canvas>
@@ -969,12 +810,34 @@
 
         let selectedAvatarUrl = "";
 
+        // Dynamically update status bar theme color on live system dark/light mode switches
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        function handleSystemThemeChange(e) {
+            const isDark = e.matches;
+            let metaTheme = document.querySelector('meta[name="theme-color"]');
+            if (!metaTheme) {
+                metaTheme = document.createElement('meta');
+                metaTheme.name = 'theme-color';
+                document.head.appendChild(metaTheme);
+            }
+            metaTheme.setAttribute('content', isDark ? '#05070c' : '#f5f6f8');
+        }
+        if (mediaQuery.addEventListener) {
+            mediaQuery.addEventListener('change', handleSystemThemeChange);
+        } else if (mediaQuery.addListener) {
+            mediaQuery.addListener(handleSystemThemeChange);
+        }
+
         onAuthStateChanged(auth, (user) => {
             handleUserStateChange(user);
         });
 
         window.toggleAuthView = function(view) {
-            showView(view === 'signin' ? 'auth-signin-view' : 'auth-signup-view');
+            if (view === 'signin') {
+                showView('auth-signin-view');
+            } else {
+                showView('auth-signup-view');
+            }
         };
 
         function showView(viewId) {
@@ -1002,7 +865,6 @@
         function handleUserStateChange(user) {
             const navAvatar = document.getElementById('nav-avatar');
             const navVerifiedBadge = document.getElementById('nav-avatar-verified');
-            const greetingUsername = document.getElementById('greeting-username');
 
             if (user) {
                 const resolvedAvatar = getResolvedAvatarUrl(user);
@@ -1011,6 +873,7 @@
                 if (user.emailVerified) {
                     if (user.displayName) {
                         showView('auth-status-view');
+                        document.getElementById('beta-intro').style.display = 'none';
 
                         let displayName = user.displayName;
                         let username = "";
@@ -1019,8 +882,6 @@
                             displayName = parts[0];
                             username = parts[1];
                         }
-
-                        if (greetingUsername) greetingUsername.innerText = displayName;
 
                         const isHabib = username.toLowerCase() === 'habib';
                         const verifiedBadge = document.getElementById('card-verified-badge');
@@ -1041,15 +902,17 @@
                         selectedAvatarUrl = DEFAULT_SILHOUETTE_AVATAR;
                         document.getElementById('setup-avatar-preview').src = DEFAULT_SILHOUETTE_AVATAR;
                         showView('auth-profile-setup-view');
+                        document.getElementById('beta-intro').style.display = 'block';
                         navVerifiedBadge.style.display = 'none';
                     }
                 } else {
                     showView('auth-verify-view');
+                    document.getElementById('beta-intro').style.display = 'block';
                     navVerifiedBadge.style.display = 'none';
                 }
             } else {
                 showView('auth-signup-view');
-                if (greetingUsername) greetingUsername.innerText = "Habib";
+                document.getElementById('beta-intro').style.display = 'block';
                 navAvatar.src = DEFAULT_SILHOUETTE_AVATAR;
                 navVerifiedBadge.style.display = 'none';
             }
@@ -1062,20 +925,20 @@
             const submitBtn = document.getElementById('btn-signup-text');
 
             if (password.length < 6) {
-                showToast("Password must be at least 6 characters.");
+                showToast("Password must be at least 6 characters long.", "⚠️");
                 return;
             }
 
             submitBtn.disabled = true;
-            submitBtn.innerHTML = `<span class="spinner"></span> Creating...`;
+            submitBtn.innerHTML = `<span class="spinner"></span> Creating Account...`;
 
             try {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 await sendEmailVerification(userCredential.user);
-                showToast("Account created! Verification link sent.");
+                showToast("Account created! Real verification link sent to your email.", "✉️");
                 handleUserStateChange(userCredential.user);
             } catch (error) {
-                showToast(error.message);
+                showToast(error.message, "❌");
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerText = "Create Account";
@@ -1093,10 +956,10 @@
 
             try {
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                showToast("Signed in successfully.");
+                showToast("Signed in successfully!", "✨");
                 handleUserStateChange(userCredential.user);
             } catch (error) {
-                showToast(error.message);
+                showToast(error.message, "❌");
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerText = "Sign In";
@@ -1112,11 +975,40 @@
             if (!auth.currentUser) return;
 
             const uid = auth.currentUser.uid;
+            const now = Date.now();
+
+            let currentDisplayName = "";
+            let currentUsername = "";
+            if (auth.currentUser.displayName && auth.currentUser.displayName.includes('::')) {
+                const parts = auth.currentUser.displayName.split('::');
+                currentDisplayName = parts[0];
+                currentUsername = parts[1];
+            }
+
+            if (currentDisplayName !== "" && displayName !== currentDisplayName) {
+                const lastChange = parseInt(localStorage.getItem(`stellarOS_last_name_change_${uid}`) || "0");
+                const daysLeft = 3 - (now - lastChange) / (1000 * 60 * 60 * 24);
+                if (daysLeft > 0) {
+                    showToast(`Name change is on cooldown. Try again in ${Math.ceil(daysLeft)} days.`, "❌");
+                    return;
+                }
+            }
+
+            if (currentUsername !== "" && username !== currentUsername) {
+                const lastChange = parseInt(localStorage.getItem(`stellarOS_last_username_change_${uid}`) || "0");
+                const daysLeft = 30 - (now - lastChange) / (1000 * 60 * 60 * 24);
+                if (daysLeft > 0) {
+                    showToast(`Username change is on cooldown. Try again in ${Math.ceil(daysLeft)} days.`, "❌");
+                    return;
+                }
+            }
+
             submitBtn.disabled = true;
-            submitBtn.innerHTML = `<span class="spinner"></span> Saving...`;
+            submitBtn.innerHTML = `<span class="spinner"></span> Activating ID...`;
 
             try {
                 const combinedName = `${displayName}::${username}`;
+                let finalFirebasePhotoUrl = DEFAULT_SILHOUETTE_AVATAR;
 
                 if (selectedAvatarUrl && selectedAvatarUrl.startsWith('data:image')) {
                     localStorage.setItem(`stellarOS_avatar_${uid}`, selectedAvatarUrl);
@@ -1126,21 +1018,41 @@
 
                 await updateProfile(auth.currentUser, {
                     displayName: combinedName,
-                    photoURL: DEFAULT_SILHOUETTE_AVATAR
+                    photoURL: finalFirebasePhotoUrl
                 });
 
-                showToast("Profile updated successfully.");
+                if (currentDisplayName !== displayName) {
+                    localStorage.setItem(`stellarOS_last_name_change_${uid}`, now.toString());
+                }
+                if (currentUsername !== username) {
+                    localStorage.setItem(`stellarOS_last_username_change_${uid}`, now.toString());
+                }
+
+                showToast("stellarOS ID setup successful!", "✨");
                 handleUserStateChange(auth.currentUser);
             } catch (error) {
-                showToast(error.message);
+                showToast(error.message, "❌");
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerText = "Save Settings";
+                submitBtn.innerText = "Save Profile Settings";
             }
         };
 
+        function getCooldownRemainingString(msRemaining) {
+            const totalHours = Math.floor(msRemaining / (1000 * 60 * 60));
+            const days = Math.floor(totalHours / 24);
+            const hours = totalHours % 24;
+            if (days > 0) {
+                return `Locked for ${days}d ${hours}h`;
+            }
+            return `Locked for ${hours}h`;
+        }
+
         window.triggerProfileEdit = function() {
             if (auth.currentUser) {
+                const uid = auth.currentUser.uid;
+                const now = Date.now();
+
                 let displayName = auth.currentUser.displayName || "";
                 let username = "";
                 if (displayName.includes('::')) {
@@ -1149,12 +1061,42 @@
                     username = parts[1];
                 }
 
-                document.getElementById('profile-display-input').value = displayName;
-                document.getElementById('profile-username-input').value = username;
+                const displayNameInput = document.getElementById('profile-display-input');
+                const usernameInput = document.getElementById('profile-username-input');
+                const nameWarning = document.getElementById('name-cooldown-warning');
+                const usernameWarning = document.getElementById('username-cooldown-warning');
+                const helperText = document.getElementById('cooldown-helper-text');
+
+                displayNameInput.value = displayName;
+                usernameInput.value = username;
 
                 const currentAvatar = getResolvedAvatarUrl(auth.currentUser);
                 document.getElementById('setup-avatar-preview').src = currentAvatar;
                 selectedAvatarUrl = currentAvatar;
+
+                displayNameInput.disabled = false;
+                usernameInput.disabled = false;
+                nameWarning.style.display = 'none';
+                usernameWarning.style.display = 'none';
+                helperText.innerText = "Complete your membership by setting up your unique handle, display name, and avatar picture.";
+
+                const nameLastChange = parseInt(localStorage.getItem(`stellarOS_last_name_change_${uid}`) || "0");
+                const nameTimeDiff = now - nameLastChange;
+                const nameCooldownDuration = 3 * 24 * 60 * 60 * 1000;
+                if (nameTimeDiff < nameCooldownDuration) {
+                    displayNameInput.disabled = true;
+                    nameWarning.innerText = `🔒 Cooldown: ${getCooldownRemainingString(nameCooldownDuration - nameTimeDiff)}`;
+                    nameWarning.style.display = 'block';
+                }
+
+                const usernameLastChange = parseInt(localStorage.getItem(`stellarOS_last_username_change_${uid}`) || "0");
+                const usernameTimeDiff = now - usernameLastChange;
+                const usernameCooldownDuration = 30 * 24 * 60 * 60 * 1000;
+                if (usernameTimeDiff < usernameCooldownDuration) {
+                    usernameInput.disabled = true;
+                    usernameWarning.innerText = `🔒 Cooldown: ${getCooldownRemainingString(usernameCooldownDuration - usernameTimeDiff)}`;
+                    usernameWarning.style.display = 'block';
+                }
 
                 showView('auth-profile-setup-view');
             }
@@ -1165,13 +1107,13 @@
                 try {
                     await reload(auth.currentUser);
                     if (auth.currentUser.emailVerified) {
-                        showToast("Email verified! Set up your profile.");
+                        showToast("Email successfully verified! Setup your ID.", "✨");
                         handleUserStateChange(auth.currentUser);
                     } else {
-                        showToast("Email not verified yet.");
+                        showToast("Your email has not been verified yet. Check your spam folder!", "⚠️");
                     }
                 } catch (error) {
-                    showToast(error.message);
+                    showToast("Failed to refresh user status: " + error.message, "❌");
                 }
             }
         };
@@ -1180,9 +1122,9 @@
             if (auth.currentUser) {
                 try {
                     await sendEmailVerification(auth.currentUser);
-                    showToast("Verification link sent.");
+                    showToast("Verification link successfully resent to your inbox!", "✉️");
                 } catch (error) {
-                    showToast(error.message);
+                    showToast(error.message, "❌");
                 }
             }
         };
@@ -1190,24 +1132,24 @@
         window.handleForgotPassword = async function() {
             const email = document.getElementById('signin-email').value;
             if (!email) {
-                showToast("Enter your email address first.");
+                showToast("Please type your email address first inside the input box.", "⚠️");
                 return;
             }
 
             try {
                 await sendPasswordResetEmail(auth, email);
-                showToast(`Reset link sent to ${email}.`);
+                showToast(`Password reset link successfully sent to ${email}!`, "✉️");
             } catch (error) {
-                showToast(error.message);
+                showToast(error.message, "❌");
             }
         };
 
         window.performLogout = async function() {
             try {
                 await signOut(auth);
-                showToast("Signed out.");
+                showToast("Signed out successfully.", "👋");
             } catch (error) {
-                showToast(error.message);
+                showToast(error.message, "❌");
             }
         };
 
@@ -1227,7 +1169,9 @@
                     ctx.drawImage(img, 0, 0, 120, 120);
 
                     selectedAvatarUrl = canvas.toDataURL('image/jpeg', 0.85);
+
                     document.getElementById('setup-avatar-preview').src = selectedAvatarUrl;
+                    showToast("Custom photo loaded successfully!", "🖼️");
                 };
                 img.src = event.target.result;
             };
@@ -1236,7 +1180,7 @@
 
         window.registerDevicePasskey = async function() {
             if (!window.PublicKeyCredential) {
-                showToast("Passkeys not supported on this browser.");
+                showToast("Biometric passkeys are not supported on this browser/device.", "⚠️");
                 return;
             }
 
@@ -1249,11 +1193,11 @@
 
                 const createCredentialOptions = {
                     challenge: randomChallenge,
-                    rp: { name: "stellarOS" },
+                    rp: { name: "stellarOS Beta" },
                     user: {
                         id: new Uint8Array(16),
                         name: currentUser.email,
-                        displayName: currentUser.displayName || "stellarOS User"
+                        displayName: currentUser.displayName || "stellarOS Tester"
                     },
                     pubKeyCredParams: [{ type: "public-key", alg: -7 }],
                     timeout: 60000,
@@ -1275,16 +1219,16 @@
                     localStorage.setItem('stellarOS_passkeys', JSON.stringify(passkeyVault));
                     localStorage.setItem('stellarOS_lastEmail', currentUser.email);
 
-                    showToast("Passkey registered.");
+                    showToast("Passkey registered! You can now log in biometrically.", "✨");
                 }
             } catch (err) {
-                showToast("Setup cancelled or not supported.");
+                showToast("Setup interrupted or not supported on this hardware configuration.", "⚠️");
             }
         };
 
         window.performPasskeySignIn = async function() {
             if (!window.PublicKeyCredential) {
-                showToast("Passkeys not available.");
+                showToast("Device passkeys are not available here.", "⚠️");
                 return;
             }
 
@@ -1292,7 +1236,7 @@
             const lastEmail = localStorage.getItem('stellarOS_lastEmail');
 
             if (!lastEmail || !passkeyVault[lastEmail]) {
-                showToast("No passkey records found.");
+                showToast("No passkey records found. Please sign up or login with your password first.", "⚠️");
                 return;
             }
 
@@ -1312,59 +1256,74 @@
 
                 const assertion = await navigator.credentials.get({ publicKey: getCredentialOptions });
                 if (assertion) {
-                    showToast("Authenticated.");
-                    setTimeout(() => { window.location.reload(); }, 800);
+                    showToast("Authentication confirmed. Accessing stellarOS cloud...", "🔑");
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
                 }
             } catch (err) {
-                showToast("Verification failed.");
+                showToast("Verification failed or rejected by system auth.", "❌");
             }
         };
 
-        function showToast(message) {
+        function showToast(message, icon = "📧") {
             const toast = document.getElementById('toast');
             document.getElementById('toast-message').innerText = message;
+            document.getElementById('toast-icon').innerText = icon;
             toast.classList.add('show');
-            setTimeout(() => { toast.classList.remove('show'); }, 4000);
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 6000);
         }
     </script>
 
     <script>
-        function switchTab(tabId) {
-            const activeSection = document.querySelector('.tab-content.active');
-            const targetSection = document.getElementById(tabId);
+        document.addEventListener("DOMContentLoaded", () => {
+            const userLang = navigator.language || navigator.userLanguage;
+            const langKey = userLang.split('-')[0];
 
-            if (activeSection === targetSection) return;
+            if (langKey === 'es') {
+                const setTxt = (selector, text) => { const el = document.querySelector(selector); if(el) el.textContent = text; };
+                const setPlch = (selector, text) => { const el = document.querySelector(selector); if(el) el.placeholder = text; };
 
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
+                setTxt('.about-open-content h1', "ID de stellarOS");
+                setTxt('#beta-intro', "Inicia sesión o registra tu cuenta para administrar tu perfil de stellarOS, llaves biométricas y preferencias de cuenta.");
+                setTxt('.profile-details-area h2', "Cuenta ID de stellarOS");
 
-            if (activeSection) {
-                activeSection.classList.remove('visible');
-                setTimeout(() => {
-                    activeSection.classList.remove('active');
-                    if (targetSection) {
-                        targetSection.classList.add('active');
-                        requestAnimationFrame(() => {
-                            targetSection.classList.add('visible');
-                        });
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
-                }, 150);
-            } else if (targetSection) {
-                targetSection.classList.add('active');
-                requestAnimationFrame(() => {
-                    targetSection.classList.add('visible');
+                document.querySelectorAll('.profile-row-label').forEach(el => {
+                    const txt = el.textContent.trim();
+                    if (txt === "Associated Email") el.textContent = "Correo Asociado";
+                    if (txt === "Membership Tier") el.textContent = "Nivel de Membresía";
+                    if (txt === "Platform Verified") el.textContent = "Plataforma Verificada";
+                    if (txt === "Device Passkey") el.textContent = "Passkey del Dispositivo";
                 });
-            }
 
-            const clickedLink = Array.from(document.querySelectorAll('.nav-link')).find(link =>
-                link.getAttribute('onclick') && link.getAttribute('onclick').includes(`'${tabId}'`)
-            );
-            if (clickedLink) {
-                clickedLink.classList.add('active');
+                document.querySelectorAll('.profile-meta-pill').forEach(el => {
+                    if (el.textContent.trim() === "BETA TESTER") el.textContent = "PROBADOR BETA";
+                });
+
+                setTxt('.logout-btn', "Cerrar Sesión");
+                setTxt('.edit-profile-btn', "Editar Perfil");
+
+                setTxt('label[for="signin-email"]', "Correo Electrónico");
+                setPlch('#signin-email', "nombre@dominio.com");
+                setTxt('label[for="signin-password"]', "Contraseña");
+                setTxt('.forgot-password-link', "¿Olvidaste tu contraseña?");
+                setTxt('#btn-signin-text', "Iniciar Sesión");
+
+                const authSwitchSignin = document.querySelector('#auth-signin-view .auth-switch');
+                if (authSwitchSignin) authSwitchSignin.innerHTML = '¿No tienes una cuenta? <span onclick="toggleAuthView(\'signup\')">Regístrate</span>';
+
+                setTxt('label[for="signup-email"]', "Correo Electrónico");
+                setPlch('#signup-email', "nombre@dominio.com");
+                setTxt('label[for="signup-password"]', "Contraseña");
+                setPlch('#signup-password', "Mínimo 6 caracteres");
+                setTxt('#btn-signup-text', "Crear Cuenta");
+
+                const authSwitchSignup = document.querySelector('#auth-signup-view .auth-switch');
+                if (authSwitchSignup) authSwitchSignup.innerHTML = '¿Ya tienes una cuenta? <span onclick="toggleAuthView(\'signin\')">Inicia Sesión</span>';
             }
-        }
+        });
     </script>
 </body>
 </html>
